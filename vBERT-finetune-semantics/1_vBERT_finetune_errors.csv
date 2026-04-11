@@ -1,0 +1,103 @@
+﻿row_id,text,true_label,pred_label,prob_neg,prob_pos,confidence,error_type,irony_score,flipped_by_irony
+64,a predictable and stereotypical little b-movie .,0,1,0.9856,0.0144,0.9856,FP (誤報正類),0.8504,True
+777,"this film was made to get laughs from the slowest person in the audience -- just pure slapstick with lots of inane , inoffensive screaming and exaggerated facial expressions .",0,1,0.9828,0.0172,0.9828,FP (誤報正類),0.8421,True
+12,a sermonizing and lifeless paean to teenage dullards .,0,1,0.9798,0.0202,0.9798,FP (誤報正類),0.8491,True
+454,big fat liar is just futile silliness looking to tap into the kiddie sensibilities .,0,1,0.9797,0.0203,0.9797,FP (誤報正類),0.877,True
+1264,"makes s&m seem very romantic , and maggie gyllenhaal is a delight .",1,0,0.0211,0.9789,0.9789,FN (漏報正類),0.8236,True
+220,this bold and lyrical first feature from raja amari expands the pat notion that middle-aged women just wanna have fun into a rousing treatise of sensual empowerment .,1,0,0.0212,0.9788,0.9788,FN (漏報正類),0.8215,True
+76,the movie exists for its soccer action and its fine acting .,1,0,0.0218,0.9782,0.9782,FN (漏報正類),0.8614,True
+571,what might have been a predictably heartwarming tale is suffused with complexity .,1,0,0.977,0.023,0.977,FN (漏報正類),0.4559,False
+1089,"serry does a fine job of capturing the climate of the times and , perhaps unwittingly , relating it to what is happening in america in 2002 .",1,0,0.0233,0.9767,0.9767,FN (漏報正類),0.8462,True
+1987,plays less like a coming-of-age romance than an infomercial .,0,1,0.9765,0.0235,0.9765,FP (誤報正類),0.8221,True
+1355,"roger michell , who did an appealing job directing persuasion and notting hill in england , gets too artsy in his american debut .",1,0,0.9747,0.0253,0.9747,FN (漏報正類),0.436,False
+1429,mark me down as a non-believer in werewolf films that are not serious and rely on stupidity as a substitute for humor .,0,1,0.9746,0.0254,0.9746,FP (誤報正類),0.8149,True
+1193,this cover does exactly what it is designed to do .,1,0,0.0262,0.9738,0.9738,FN (漏報正類),0.8792,True
+402,"spyro games always used to be fun ,  but that tradition ends here . but that tradition ends here .",0,1,0.9737,0.0263,0.9737,FP (誤報正類),0.9105,True
+236,"christians sensitive to a reductionist view of their lord as a luv-spreading dr. feelgood or omnipotent slacker will feel vastly more affronted than secularists , who might even praise god for delivering such an instant camp classic .",1,0,0.9733,0.0267,0.9733,FN (漏報正類),0.7884,False
+1311,good movie .,1,0,0.0273,0.9727,0.9727,FN (漏報正類),0.839,True
+1632,"you 'll be left with the sensation of having just witnessed a great performance and , perhaps , give in to the urge to get on your feet and shake it .",1,0,0.9725,0.0275,0.9725,FN (漏報正類),0.2654,False
+249,this turner has worked well for the last few years .,1,0,0.0276,0.9724,0.9724,FN (漏報正類),0.9312,True
+558,also these attachment pieces are very easy to clean .,1,0,0.0285,0.9715,0.9715,FN (漏報正類),0.8737,True
+1345,we love that it can go straight from the stove top to the oven .,1,0,0.0287,0.9713,0.9713,FN (漏報正類),0.8444,True
+94,"superior genre storytelling , which gets under our skin simply by crossing the nuclear line .",1,0,0.0293,0.9707,0.9707,FN (漏報正類),0.9266,True
+1980,the feel of the wheel is nice and i like the side scrolling feature .,0,1,0.0313,0.9687,0.9687,FP (誤報正類),0.3666,False
+1886,the perfect film for those who like sick comedies that can be snide .,1,0,0.0329,0.9671,0.9671,FN (漏報正類),0.9264,True
+1786,"otterboxes are a little bulky ,  but nothing protects better for the price . but nothing protects better for the price .",1,0,0.967,0.033,0.967,FN (漏報正類),0.5394,False
+1530,"a strong first quarter , slightly less so second quarter , and average second half .",0,1,0.0334,0.9666,0.9666,FP (誤報正類),0.122,False
+431,the complication is the heft of the phone .,1,0,0.9657,0.0343,0.9657,FN (漏報正類),0.2117,False
+57,this is junk food cinema at its greasiest .,0,1,0.9631,0.0369,0.9631,FP (誤報正類),0.8745,True
+105,"it s very black ,  and it does add volume .",0,1,0.0373,0.9627,0.9627,FP (誤報正類),0.7548,False
+590,blade release buttons are simple to use which makes cleaning easy .,1,0,0.0405,0.9595,0.9595,FN (漏報正類),0.9466,True
+271,"as adapted by kevin molony from simon leys ' novel `` the death of napoleon '' and directed by alan taylor , napoleon 's journey is interesting but his parisian rebirth is stillborn but his parisian rebirth is stillborn",0,1,0.0408,0.9592,0.9592,FP (誤報正類),0.0929,False
+1223,making seperation and cross contamination containment a very easy .,1,0,0.0408,0.9592,0.9592,FN (漏報正類),0.9462,True
+1979,saves on cleaning and the use of aluminum foil .,1,0,0.0438,0.9562,0.9562,FN (漏報正類),0.8891,True
+559,"not so much funny as aggressively sitcom-cute , it 's full of throwaway one-liners , not-quite jokes , and a determined tv amiability that allen personifies .",0,1,0.045,0.955,0.955,FP (誤報正類),0.2767,False
+517,the only thing is it stretches easily so be careful with that .,1,0,0.953,0.047,0.953,FN (漏報正類),0.0547,False
+1038,really confused ppl riding with me at first .,1,0,0.9519,0.0481,0.9519,FN (漏報正類),0.4335,False
+1026,this is the best american movie about troubled teens since 1998 's whatever .,1,0,0.0553,0.9447,0.9447,FN (漏報正類),0.896,True
+130,i ve used these a few times and broke them very easily .,0,1,0.0577,0.9423,0.9423,FP (誤報正類),0.1332,False
+808,"call me a wimp , but i cried , not once , but three times in this animated sweet film . but three times in this animated sweet film .",1,0,0.9412,0.0588,0.9412,FN (漏報正類),0.2089,False
+639,i m convinced vacuum sealing works just as advertised .,1,0,0.0594,0.9406,0.9406,FN (漏報正類),0.9694,True
+776,bought this for use to hold my droid incredible .,0,1,0.0617,0.9383,0.9383,FP (誤報正類),0.1084,False
+436,a process that takes a couple of minutes .,0,1,0.0674,0.9326,0.9326,FP (誤報正類),0.4177,False
+1565,"you might not want to hang out with samantha , but you 'll probably see a bit of yourself in her unfinished story . but you 'll probably see a bit of yourself in her unfinished story .",1,0,0.9321,0.0679,0.9321,FN (漏報正類),0.0556,False
+1882,the pair made in mexico is much better .,0,1,0.0683,0.9317,0.9317,FP (誤報正類),0.1999,False
+1860,i don t think pie weights are for me .,1,0,0.9288,0.0712,0.9288,FN (漏報正類),0.0398,False
+1243,"if there 's a way to effectively teach kids about the dangers of drugs , i think it 's in projects like the -lrb- unfortunately r-rated -rrb- paid .",1,0,0.9164,0.0836,0.9164,FN (漏報正類),0.4108,False
+301,"hand graters can be a mess to clean ,  especially under the handle .",1,0,0.9154,0.0846,0.9154,FN (漏報正類),0.4758,False
+195,i loved the food for my cats as you can read below .,0,1,0.0847,0.9153,0.9153,FP (誤報正類),0.1036,False
+146,the smartest bonehead comedy of the summer .,1,0,0.0881,0.9119,0.9119,FN (漏報正類),0.9334,True
+1742,"visits spy-movie territory like a novel you ca n't put down , examines a footnote to history seldom brought to light on the screen , and keeps you guessing from first frame to last .",1,0,0.9119,0.0881,0.9119,FN (漏報正類),0.0423,False
+1583,only issue is the blue light it becomes a annoying after a while . while .,1,0,0.9113,0.0887,0.9113,FN (漏報正類),0.2062,False
+862,"it 's a decent glimpse into a time period , and an outcast , that is no longer accessible , but it does n't necessarily shed more light on its subject than the popular predecessor . but it does n't necessarily shed more light on its subject than the popular predecessor .",1,0,0.9054,0.0946,0.9054,FN (漏報正類),0.0508,False
+1639,the knife got a tad rusty after running it through a cycle .,1,0,0.9006,0.0994,0.9006,FN (漏報正類),0.1581,False
+878,it adds size o an already pretty big system .,0,1,0.0999,0.9001,0.9001,FP (誤報正類),0.7339,False
+1139,"lovingly choreographed bloodshed taking place in a pristine movie neverland , basically .",1,0,0.1011,0.8989,0.8989,FN (漏報正類),0.9568,True
+1127,i would have given this five stars except for the only complaint i had .,1,0,0.8816,0.1184,0.8816,FN (漏報正類),0.0767,False
+1865,the glass cuisinart lids would pour water everywhere in a wet mess .,1,0,0.8811,0.1189,0.8811,FN (漏報正類),0.2407,False
+30,i have never had a pleasant experience with the customer support at cuisnart .,1,0,0.8805,0.1195,0.8805,FN (漏報正類),0.4396,False
+123,"the overall feel of the film is pretty cheesy , but there 's still a real sense that the star trek tradition has been honored as best it can , given the embarrassing script and weak direction . still a real sense that the star trek tradition has been honored as best it can , given the embarrassing script and weak direction .",0,1,0.1248,0.8752,0.8752,FP (誤報正類),0.1278,False
+1654,it s like i got an extension cord and male outlets on both ends .,0,1,0.1384,0.8616,0.8616,FP (誤報正類),0.3096,False
+573,"good for a few unintentional laughs , `` extreme ops '' was obviously made for the `` xxx '' crowd , people who enjoy mindless action without the benefit of decent acting , writing , and direction .",0,1,0.8595,0.1405,0.8595,FP (誤報正類),0.805,True
+84,"the picture , scored by a perversely cheerful marcus miller accordion\/harmonica\/banjo abomination , is a monument to bad in all its florid variety .",0,1,0.1467,0.8533,0.8533,FP (誤報正類),0.2412,False
+304,i also have to hold the headphone cord to keep it from flapping around .,0,1,0.147,0.853,0.853,FP (誤報正類),0.2805,False
+276,they have a medium pile lining that has more of a stiffer polyester feel .,0,1,0.1598,0.8402,0.8402,FP (誤報正類),0.2565,False
+1304,"this pep-talk for faith , hope and charity does little to offend , but if saccharine earnestness were a crime , the film 's producers would be in the clink for life . but if saccharine earnestness were a crime , the film 's producers would be in the clink for life .",0,1,0.1638,0.8362,0.8362,FP (誤報正類),0.5279,False
+681,i would recommend this case to my friends .,1,0,0.8241,0.1759,0.8241,FN (漏報正類),0.0879,False
+1425,don t waste your time or money on these jeans .,0,1,0.1788,0.8212,0.8212,FP (誤報正類),0.0519,False
+202,"num_extend has much better graphics ,  better sound ,  slightly better control .",0,1,0.1806,0.8194,0.8194,FP (誤報正類),0.3983,False
+603,coming from an asian background it s not something we normally cook with .,1,0,0.817,0.183,0.817,FN (漏報正類),0.1733,False
+1015,instead i would recommend cetaphil gentle cleanser and you will be fine .,0,1,0.1839,0.8161,0.8161,FP (誤報正類),0.2832,False
+1228,white in the refrigerator a couple of days longer .,1,0,0.8108,0.1892,0.8108,FN (漏報正類),0.1702,False
+531,"unfortunately , heartbreak hospital wants to convey the same kind of haughtiness in its own sketchy material but this territory has already been explored previously with better aplomb and sardonic wit . but this territory has already been explored previously with better aplomb and sardonic wit .",0,1,0.1973,0.8027,0.8027,FP (誤報正類),0.1545,False
+1189,i have purchased fairly cheap holders from motorola and they lasted a while . while .,0,1,0.198,0.802,0.802,FP (誤報正類),0.3441,False
+1604,then i put the cream on my feet especially around my toes and heels .,0,1,0.1981,0.8019,0.8019,FP (誤報正類),0.5117,False
+807,i never thought about making cheese until ree drummond made some on her show .,1,0,0.7681,0.2319,0.7681,FN (漏報正類),0.345,False
+631,you ve probably seen them use it on iron chef .,1,0,0.7669,0.2331,0.7669,FN (漏報正類),0.6055,False
+400,i bought this toy for my boys a few years back .,0,1,0.2523,0.7477,0.7477,FP (誤報正類),0.1953,False
+1588,"to ataris credit ,  this game was a bit fun .",0,1,0.2554,0.7446,0.7446,FP (誤報正類),0.7821,False
+1631,its good that its made in canada rather than china .,0,1,0.2784,0.7216,0.7216,FP (誤報正類),0.68,False
+248,i do n't think i 've been as entranced and appalled by an asian film since shinya tsukamoto 's iron man .,1,0,0.7187,0.2813,0.7187,FN (漏報正類),0.0989,False
+1636,when purchased i discovered there was a newer product update :  model num_extend,1,0,0.6886,0.3114,0.6886,FN (漏報正類),0.496,False
+799,please reply with the filter part number and your location .,0,1,0.3157,0.6843,0.6843,FP (誤報正類),0.0667,False
+692,another num_num calories from the other num_num grams of carbohydrates .,0,1,0.3214,0.6786,0.6786,FP (誤報正類),0.5465,False
+1129,amazon was good to give me a refund right away .,0,1,0.6696,0.3304,0.6696,FP (誤報正類),0.85,True
+1846,i put my kitchen appliances through the ringer .,1,0,0.6671,0.3329,0.6671,FN (漏報正類),0.4208,False
+501,worked best on older new england house with narrow staircase .,0,1,0.3348,0.6652,0.6652,FP (誤報正類),0.7347,False
+699,"more honest about alzheimer 's disease , i think , than iris .",1,0,0.6554,0.3446,0.6554,FN (漏報正類),0.2872,False
+1741,recently threw in the trash as the line wore out .,1,0,0.6294,0.3706,0.6294,FN (漏報正類),0.137,False
+1152,i also prefered the blade weight and thickness of the wustof .,1,0,0.6215,0.3785,0.6215,FN (漏報正類),0.0387,False
+572,i would definitely recommend this for a cute case .,1,0,0.6215,0.3785,0.6215,FN (漏報正類),0.0706,False
+290,games like gem journey are easier to play with a stylus like this .,1,0,0.6084,0.3916,0.6084,FN (漏報正類),0.5509,False
+23,"as lo-fi as the special effects are , the folks who cobbled nemesis together indulge the force of humanity over hardware in a way that george lucas has long forgotten .",1,0,0.6055,0.3945,0.6055,FN (漏報正類),0.7338,False
+1126,it 's a great deal of sizzle and very little steak .,0,1,0.3982,0.6018,0.6018,FP (誤報正類),0.1332,False
+1577,this cream will give you acne if you have sensitive skin .,0,1,0.4013,0.5987,0.5987,FP (誤報正類),0.5657,False
+1611,"nevertheless ,  the smell lasts for num_num or num_num minutes tops . nevertheless ,  the smell lasts for num_num or num_num minutes tops .",0,1,0.4138,0.5862,0.5862,FP (誤報正類),0.6063,False
+1403,"if you are grinding dry items ,  it should be ok .",0,1,0.5496,0.4504,0.5496,FP (誤報正類),0.9226,True
+1783,those who managed to avoid the deconstructionist theorizing of french philosopher jacques derrida in college can now take an 85-minute brush-up course with the documentary derrida .,0,1,0.4513,0.5487,0.5487,FP (誤報正類),0.6902,False
+735,"a teasing drama whose relentless good-deed\/bad-deed reversals are just interesting enough to make a sinner like me pray for an even more interesting , less symmetrical , less obviously cross-shaped creation .",1,0,0.5466,0.4534,0.5466,FN (漏報正類),0.6806,False
+150,there are films that try the patience of even the most cinema-besotted critic -- and this was one of them .,0,1,0.47,0.53,0.53,FP (誤報正類),0.3936,False
+1613,"maybe it 's asking too much , but if a movie is truly going to inspire me , i want a little more than this . but if a movie is truly going to inspire me , i want a little more than this .",0,1,0.4803,0.5197,0.5197,FP (誤報正類),0.0348,False
+71,the material that it is made of is like a dirt magnet .,0,1,0.4938,0.5062,0.5062,FP (誤報正類),0.3645,False
+227,i kept it though i do not use it . though i do not use it .,0,1,0.4958,0.5042,0.5042,FP (誤報正類),0.069,False
+896,time changer may not be the most memorable cinema session but its profound self-evaluation message about our fragile existence and the absence of spiritual guidance should at least invade an abundance of mindsets but its profound self-evaluation message about our fragile existence and the absence of spiritual guidance should at least invade an abundance of mindsets,1,0,0.5038,0.4962,0.5038,FN (漏報正類),0.3124,False
