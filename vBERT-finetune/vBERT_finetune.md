@@ -1,4 +1,6 @@
+# bert finetune 紀錄
 
+## 原始(baseline)
 Train batches: 100  Val batches: 25
 
 ============================================================
@@ -67,3 +69,5 @@ Max Length  : 128
 Best Val Acc: 0.8025
 Best Val Loss: 0.4966
 Test 筆數   : 11000
+
+## 修改截斷(改成384)
