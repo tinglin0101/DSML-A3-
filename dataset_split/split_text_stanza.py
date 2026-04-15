@@ -8,49 +8,49 @@ def get_stanza_pipeline():
     # 我們需要 tokenize (分詞) 和 lemma (詞形還原)，也可以選擇加入 pos。
     return stanza.Pipeline(lang='en', processors='tokenize,pos,lemma')
 
-def split_text_by_transition_v1(text, nlp):
-    transitions = { "but", "however", "although", "though", "yet", "nevertheless", 
-        "nonetheless", "except", "while", "whereas"}
-    if not isinstance(text, str):
-        return [text]
+# def split_text_by_transition_v1(text, nlp):
+#     transitions = { "but", "however", "although", "though", "yet", "nevertheless", 
+#         "nonetheless", "except", "while", "whereas"}
+#     if not isinstance(text, str):
+#         return [text]
         
-    doc = nlp(text)
-    split_indices = []
+#     doc = nlp(text)
+#     split_indices = []
     
-    for sentence in doc.sentences:
-        for word in sentence.words:
-            # 檢查單字或其原型是否在我們的轉折詞列表中
-            word_lower = word.text.lower()
-            lemma_lower = word.lemma.lower() if word.lemma else ""
+#     for sentence in doc.sentences:
+#         for word in sentence.words:
+#             # 檢查單字或其原型是否在我們的轉折詞列表中
+#             word_lower = word.text.lower()
+#             lemma_lower = word.lemma.lower() if word.lemma else ""
             
-            if word_lower in transitions or lemma_lower in transitions:
-                # 加上詞性 (POS) 判斷，確保該詞真的是作為轉折連接詞或副詞使用
-                # CCONJ = 對等連接詞, SCONJ = 從屬連接詞, ADV = 副詞
-                # 這樣可以避免把介係詞 (例如 except this) 或名詞 (例如 for a while) 誤當成轉折切開
-                if getattr(word, "upos", "") in ("CCONJ", "SCONJ", "ADV"):
-                    # 確保我們不從第一個字開始切割（如果句首就是轉折詞的話）
-                    if word.start_char > 0:
-                        split_indices.append(word.start_char)
+#             if word_lower in transitions or lemma_lower in transitions:
+#                 # 加上詞性 (POS) 判斷，確保該詞真的是作為轉折連接詞或副詞使用
+#                 # CCONJ = 對等連接詞, SCONJ = 從屬連接詞, ADV = 副詞
+#                 # 這樣可以避免把介係詞 (例如 except this) 或名詞 (例如 for a while) 誤當成轉折切開
+#                 if getattr(word, "upos", "") in ("CCONJ", "SCONJ", "ADV"):
+#                     # 確保我們不從第一個字開始切割（如果句首就是轉折詞的話）
+#                     if word.start_char > 0:
+#                         split_indices.append(word.start_char)
                     
-    # 根據取得的索引來切割原始字串
-    parts = []
-    last_idx = 0
-    for idx in split_indices:
-        segment = text[last_idx:idx].strip()
-        if segment:
-            parts.append(segment)
-        last_idx = idx
+#     # 根據取得的索引來切割原始字串
+#     parts = []
+#     last_idx = 0
+#     for idx in split_indices:
+#         segment = text[last_idx:idx].strip()
+#         if segment:
+#             parts.append(segment)
+#         last_idx = idx
         
-    # 加入最後一段
-    final_segment = text[last_idx:].strip()
-    if final_segment:
-        parts.append(final_segment)
+#     # 加入最後一段
+#     final_segment = text[last_idx:].strip()
+#     if final_segment:
+#         parts.append(final_segment)
     
-    # 如果都沒有擷取到，回傳原本的 text
-    if not parts:
-        parts = [text]
+#     # 如果都沒有擷取到，回傳原本的 text
+#     if not parts:
+#         parts = [text]
         
-    return parts
+#     return parts
 
 def split_text_by_transition_v2(text, nlp):
     # 這裡的轉折詞不包含 and，因為 and 需要特殊處理

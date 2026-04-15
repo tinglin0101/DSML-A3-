@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls d:/DSML-A3-/*.py)",
+      "Bash(python -c \"import nrclex; print\\('nrclex ok'\\)\")",
+      "Bash(python -c \"import pandas; print\\('pandas ok'\\)\")",
+      "Bash(pip install *)",
+      "Bash(python -c ' *)"
+    ]
+  }
+}
