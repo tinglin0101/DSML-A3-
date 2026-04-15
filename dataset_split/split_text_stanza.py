@@ -92,6 +92,7 @@ def split_text_by_transition_v2(text, nlp):
                     # 如果是，代表 and 正在連接兩個動作/子句，此時才作為切割點
                     if getattr(head_word, "upos", "") in ("VERB", "AUX"):
                         if start_char > 0:
+                            print("and: ",text)
                             split_indices.append(start_char)
                             
     # 確保切割點由小到大排序 (有時句法分析順序不一定，排序較保險)
