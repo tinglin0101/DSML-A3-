@@ -1,0 +1,8 @@
+scheme,acc,precision,recall,f1,auc,mse,output
+sqrt,0.686,0.6771,0.711,0.6937,0.7563,0.2086,row_scores_v4b_sqrt.csv
+uniform,0.6845,0.6804,0.696,0.6881,0.7575,0.2084,row_scores_v4b_uniform.csv
+linear,0.69,0.6863,0.7,0.6931,0.7532,0.2102,row_scores_v4b_linear.csv
+log,0.688,0.6808,0.708,0.6941,0.7563,0.209,row_scores_v4b_log.csv
+decay,0.6885,0.6879,0.69,0.689,0.7558,0.2085,row_scores_v4b_decay.csv
+last,0.6905,0.6903,0.691,0.6907,0.7556,0.2086,row_scores_v4b_last.csv
+contrast,0.676,0.6722,0.687,0.6795,0.7519,0.2092,row_scores_v4b_contrast.csv

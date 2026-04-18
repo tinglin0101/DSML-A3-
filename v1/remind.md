@@ -2,7 +2,7 @@
 記錄將文本切割後再情緒分析
 
 ## 情緒分析(切後)
-- semantics: 使用train_2022_split_v2
+- semantics: 使用train_2022_split_stanza_v2
 - 可以增強
   - and
   - 轉折詞的
@@ -39,14 +39,14 @@ v4: 0.7159(AUC) -> kaggle: 0.6752
 ### 可以做更改的部分
 1. bert 微調，用一小部分的微調樣本
    1. 要建立多個句子微調樣本
-2. v3 預測些微不平衡 -> **vX.1**
+2. v3 預測些微不平衡
    1. 0->1025
    2. 1->975
-3. 加權方式修改 -> **vX.1**
+3. 加權方式修改
    1. 目前(v2,v3,v4): Sum_i( feature_i * sqrt(rank_i + 1) )
 4. 重新檢視切割方式
 
-## v4 測試檔
+## v4 測試檔(test.py)
 
 ### 原始: 5-cross validation(random forest)
 
@@ -59,3 +59,97 @@ REC      : mean=0.7040  std=0.0271
 F1       : mean=0.6913  std=0.0141
 AUC      : mean=0.7525  std=0.0071
 MSE      : mean=0.2100  std=0.0014
+
+## 重新檢視切割技術
+
+### 專有名詞保護與詞性切割
+- 說明: Entity Masking方式加上詞性標註（POS） 與 依存句法（Dependency Parsing）
+- file: 修改 split_text_stanza.py
+- output: train_2022_split_stanza_v3.csv
+
+  scheme    acc  precision  recall     f1    auc    mse                      output
+    sqrt 0.6860     0.6771   0.711 0.6937 0.7563 0.2086     row_scores_v4b_sqrt.csv
+ uniform 0.6845     0.6804   0.696 0.6881 0.7575 0.2084  row_scores_v4b_uniform.csv
+  linear 0.6900     0.6863   0.700 0.6931 0.7532 0.2102   row_scores_v4b_linear.csv
+     log 0.6880     0.6808   0.708 0.6941 0.7563 0.2090      row_scores_v4b_log.csv
+   decay 0.6885     0.6879   0.690 0.6890 0.7558 0.2085    row_scores_v4b_decay.csv
+    last 0.6905     0.6903   0.691 0.6907 0.7556 0.2086     row_scores_v4b_last.csv
+contrast 0.6760     0.6722   0.687 0.6795 0.7519 0.2092 row_scores_v4b_contrast.csv
+
+#### sqrt
+Confusion Matrix:
+   [[661 339]
+   [289 **711**]]
+ACC      : mean=0.6860  std=0.0169
+PRE      : mean=0.6775  std=0.0196
+REC      : mean=0.7110  std=0.0111
+F1       : mean=0.6938  std=0.0142
+AUC      : mean=0.7570  std=0.0228
+MSE      : mean=0.2086  std=0.0046
+
+#### uniform
+Confusion Matrix:
+   [[673 327]
+   [304 696]]
+ACC      : mean=0.6845  std=0.0192
+PRE      : mean=0.6813  std=0.0242
+REC      : mean=0.6960  std=0.0244
+F1       : mean=0.6881  std=0.0166
+AUC      : mean=0.7590  std=0.0163
+MSE      : mean=0.2084  std=0.0031
+
+#### linear
+Confusion Matrix:
+   [[680 320]
+   [300 700]]
+ACC      : mean=0.6900  std=0.0120
+PRE      : mean=0.6871  std=0.0197
+REC      : mean=0.7000  std=0.0100
+F1       : mean=0.6932  std=0.0053
+AUC      : mean=0.7530  std=0.0163
+MSE      : mean=0.2102  std=0.0040
+
+#### log
+Confusion Matrix:
+   [[668 332]
+   [292 708]]
+ACC      : mean=0.6880  std=0.0255
+PRE      : mean=0.6818  std=0.0292
+REC      : mean=0.7080  std=0.0273
+F1       : mean=0.6942  std=0.0225
+AUC      : mean=0.7569  std=0.0293
+MSE      : mean=0.2090  std=0.0060
+
+#### decay
+Confusion Matrix:
+   [[687 313]
+   [310 690]]
+ACC      : mean=0.6885  std=0.0229
+PRE      : mean=0.6879  std=0.0216
+REC      : mean=0.6900  std=0.0277
+F1       : mean=0.6889  std=0.0239
+AUC      : mean=0.7562  std=0.0195
+MSE      : mean=0.2085  std=0.0040
+
+#### last
+  Confusion Matrix:
+[[**690** 310]
+ [309 691]]
+  ACC      : mean=0.6905  std=0.0227
+  PRE      : mean=0.6916  std=0.0293
+  REC      : mean=0.6910  std=0.0271
+  F1       : mean=0.6907  std=0.0197
+  AUC      : mean=0.7579  std=0.0198
+  MSE      : mean=0.2086  std=0.0037
+
+#### contrast
+  Confusion Matrix:
+[[665 335]
+ [313 687]]
+  ACC      : mean=0.6760  std=0.0135
+  PRE      : mean=0.6733  std=0.0213
+  REC      : mean=0.6870  std=0.0229
+  F1       : mean=0.6795  std=0.0100
+  AUC      : mean=0.7527  std=0.0052
+  MSE      : mean=0.2092  std=0.0020
+
