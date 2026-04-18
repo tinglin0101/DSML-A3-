@@ -46,10 +46,7 @@ v4: 0.7159(AUC) -> kaggle: 0.6752
    1. 目前(v2,v3,v4): Sum_i( feature_i * sqrt(rank_i + 1) )
 4. 重新檢視切割方式
 
-## v4 測試檔(test.py)
-
-### 原始: 5-cross validation(random forest)
-
+## v5 測試檔(v5.py)
 Confusion Matrix:
    [[668 332]
    [296 704]]
@@ -60,7 +57,7 @@ F1       : mean=0.6913  std=0.0141
 AUC      : mean=0.7525  std=0.0071
 MSE      : mean=0.2100  std=0.0014
 
-## 重新檢視切割技術
+## 重新檢視切割技術(無用)
 
 ### 專有名詞保護與詞性切割
 - 說明: Entity Masking方式加上詞性標註（POS） 與 依存句法（Dependency Parsing）
@@ -153,3 +150,13 @@ MSE      : mean=0.2085  std=0.0040
   AUC      : mean=0.7527  std=0.0052
   MSE      : mean=0.2092  std=0.0020
 
+## v5 新增vader特徵(v5.py)
+Confusion Matrix:
+   [[716 284]
+   [316 684]]
+ACC      : mean=0.7000  std=0.0262
+PRE      : mean=0.7072  std=0.0303
+REC      : mean=0.6840  std=0.0287
+F1       : mean=0.6951  std=0.0261
+AUC      : mean=0.7677  std=0.0220
+MSE      : mean=0.1981  std=0.0064

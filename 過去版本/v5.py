@@ -34,6 +34,7 @@ from sklearn.metrics import (
     precision_score, recall_score, f1_score,
 )
 from sklearn.pipeline import Pipeline
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 
 # ── Constants ─────────────────────────────────────────────────────────────────
@@ -41,8 +42,13 @@ from sklearn.pipeline import Pipeline
 SBERT_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 SBERT_DIM        = 384          # embedding dimension for all-MiniLM-L6-v2
 
+VADER_FEATURES = ["vader_neg", "vader_neu", "vader_pos", "vader_compound"]
+
 # Aggregated feature columns: one per embedding dimension
 AGG_FEATURES = [f"emb_{i}" for i in range(SBERT_DIM)]
+
+# Combined feature columns fed to the classifier
+ALL_FEATURES = AGG_FEATURES + VADER_FEATURES
 
 WEIGHT_SCHEMES = ("sqrt", "uniform", "linear", "log", "decay", "last", "contrast")
 
@@ -118,6 +124,21 @@ def _build_sbert_model() -> SentenceTransformer:
     return model
 
 
+def _build_vader() -> SentimentIntensityAnalyzer:
+    return SentimentIntensityAnalyzer()
+
+
+def _get_vader_scores(vader: SentimentIntensityAnalyzer, text: str) -> dict:
+    """Return neg/neu/pos/compound scores for the full original text."""
+    scores = vader.polarity_scores(text)
+    return {
+        "vader_neg":      scores["neg"],
+        "vader_neu":      scores["neu"],
+        "vader_pos":      scores["pos"],
+        "vader_compound": scores["compound"],
+    }
+
+
 def _get_embedding(sbert: SentenceTransformer, text: str) -> np.ndarray:
     """Return a normalised 384-dim embedding for one text segment."""
     emb = sbert.encode(text, normalize_embeddings=True, show_progress_bar=False)
@@ -169,13 +190,14 @@ def _compute_weights(n: int, scheme: str) -> list:
 
 def process_row(text: str, label: int, row_id: int,
                 nlp: stanza.Pipeline, sbert: SentenceTransformer,
+                vader: SentimentIntensityAnalyzer,
                 weight_scheme: str = "sqrt") -> dict:
     """
     Run Step 1 (split) + Step 2 (Sentence-BERT) on a single row, then aggregate:
         agg_emb = Sum_i( emb_i * weight(i) )
+    Also appends VADER scores computed on the full original text.
 
-    Weight scheme is controlled by `weight_scheme` (see _compute_weights).
-    Returns a flat dict:  row_id, LABEL, NUM_SPLITS, emb_0, emb_1, …, emb_383
+    Returns a flat dict:  row_id, LABEL, NUM_SPLITS, emb_0…emb_383, vader_neg/neu/pos/compound
     """
     # Step 1 — split
     segments = split_text(text, nlp)
@@ -192,11 +214,15 @@ def process_row(text: str, label: int, row_id: int,
     result = {"row_id": row_id, "LABEL": label, "NUM_SPLITS": n}
     for j, val in enumerate(agg_emb):
         result[f"emb_{j}"] = round(float(val), 6)
+
+    # VADER on the full sentence
+    result.update(_get_vader_scores(vader, text))
     return result
 
 
 def run_row_by_row(df: pd.DataFrame, nlp: stanza.Pipeline,
                    sbert: SentenceTransformer,
+                   vader: SentimentIntensityAnalyzer,
                    has_label: bool = True,
                    weight_scheme: str = "sqrt") -> pd.DataFrame:
     """
@@ -212,11 +238,11 @@ def run_row_by_row(df: pd.DataFrame, nlp: stanza.Pipeline,
             print(f"    progress: {i}/{total}")
         label = int(row["LABEL"]) if has_label else -1
         records.append(
-            process_row(str(row["TEXT"]), label, int(row["row_id"]), nlp, sbert,
+            process_row(str(row["TEXT"]), label, int(row["row_id"]), nlp, sbert, vader,
                         weight_scheme=weight_scheme)
         )
 
-    cols = ["row_id", "LABEL", "NUM_SPLITS"] + AGG_FEATURES
+    cols = ["row_id", "LABEL", "NUM_SPLITS"] + AGG_FEATURES + VADER_FEATURES
     result_df = pd.DataFrame(records)[cols]
     print(f"  Done — {len(result_df)} aggregated rows")
     return result_df
@@ -265,10 +291,10 @@ def run_cross_validation(agg_df: pd.DataFrame, model_name: str, n_splits: int = 
 
     Returns: (output_df, trained_pipe_on_full_data, feat_cols)
     """
-    print(f"  Model: {model_name}  |  Features: {SBERT_DIM}-dim SBERT embeddings")
+    print(f"  Model: {model_name}  |  Features: {SBERT_DIM}-dim SBERT + 4 VADER")
     print(f"  Running {n_splits}-fold stratified cross-validation …")
 
-    feat_cols = AGG_FEATURES
+    feat_cols = ALL_FEATURES
     X = agg_df[feat_cols].values
     y = agg_df["LABEL"].values
 
@@ -312,9 +338,9 @@ def run_regression(agg_df: pd.DataFrame, model_name: str):
 
     Returns: (output_df, trained_pipe, feat_cols)
     """
-    print(f"  Model: {model_name}  |  Features: {SBERT_DIM}-dim SBERT embeddings")
+    print(f"  Model: {model_name}  |  Features: {SBERT_DIM}-dim SBERT + 4 VADER")
 
-    feat_cols = AGG_FEATURES
+    feat_cols = ALL_FEATURES
     X = agg_df[feat_cols].values
     y = agg_df["LABEL"].values
 
@@ -389,18 +415,19 @@ def main():
     print("── Initialising models ─────────────────────────────────────")
     nlp   = _build_stanza_pipeline()
     sbert = _build_sbert_model()
+    vader = _build_vader()
 
     # ── Steps 1+2: row-by-row split → SBERT embedding → weighted sum ─────────
     print("\n── Steps 1+2: Split + Sentence-BERT Embedding (row-by-row) ─")
-    agg_df = run_row_by_row(df, nlp, sbert, has_label=True, weight_scheme=args.weight)
+    agg_df = run_row_by_row(df, nlp, sbert, vader, has_label=True, weight_scheme=args.weight)
 
     # ── Step 3: 5-Fold Cross-Validation + Regression Scoring ─────────────────
     print("\n── Step 3: 5-Fold CV + Regression Scoring ──────────────────")
     row_scores, trained_pipe, feat_cols = run_cross_validation(agg_df, args.model, n_splits=5)
 
     # ── Save ──────────────────────────────────────────────────────────────────
-    row_scores.to_csv(args.output, index=False)
-    print(f"\n  Saved results to: {args.output}")
+    # row_scores.to_csv(args.output, index=False)
+    # print(f"\n  Saved results to: {args.output}")
 
 if __name__ == "__main__":
     main()
