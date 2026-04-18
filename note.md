@@ -1,5 +1,4 @@
 # 紀錄
-記錄將文本切割後再情緒分析
 
 ## 情緒分析(切後)
 - semantics: 使用train_2022_split_stanza_v2
@@ -7,7 +6,7 @@
   - and
   - 轉折詞的
 
-## pipeline-v1
+## v1 修改建議
 from gemini
 
 1. 重新審視評估指標與資料分佈
@@ -46,7 +45,17 @@ v4: 0.7159(AUC) -> kaggle: 0.6752
    1. 目前(v2,v3,v4): Sum_i( feature_i * sqrt(rank_i + 1) )
 4. 重新檢視切割方式
 
-## v5 測試檔(v5.py)
+## v5 
+- 差異
+  - 多種 Segment Weighting Schemes
+    - v4：固定使用 sqrt(i+1) 加權
+    - v5：新增 7 種方案可選：sqrt, uniform, linear, log, decay, last, contrast
+  - 5-Fold Cross-Validation 取代單純 Train/Val Split
+    - v4：run_regression() — 80/20 split，一次訓練
+    - v5：run_cross_validation() — Stratified 5-fold CV，輸出 OOF scores + 每 fold 的混淆矩陣、AUC、F1 等詳細指標
+  - 更完整的評估指標
+    - v5 新增 confusion_matrix, accuracy_score, precision_score, recall_score, f1_score 的 per-fold 輸出
+- 結果
 Confusion Matrix:
    [[668 332]
    [296 704]]
@@ -160,3 +169,46 @@ REC      : mean=0.6840  std=0.0287
 F1       : mean=0.6951  std=0.0261
 AUC      : mean=0.7677  std=0.0220
 MSE      : mean=0.1981  std=0.0064
+
+## v6 更改 embedding model
+
+### v6a: all-MiniLM-L6-v2 改成 all-mpnet-base-v(v6a.py)
+Confusion Matrix:
+   [[749 251]
+   [241 759]]
+
+ACC      : mean=0.7540  std=0.0172
+PRE      : mean=0.7516  std=0.0176
+REC      : mean=0.7590  std=0.0227
+F1       : mean=0.7552  std=0.0178
+AUC      : mean=0.8467  std=0.0205
+MSE      : mean=0.1693  std=0.0072
+
+---
+kaggle accuracy
+- public: 0.72672
+- private: 
+
+### v6b: sentence-transformers/all-MiniLM-L6-v2 改成 cardiffnlp/twitter-roberta-base-sentiment(v6b.py)
+Confusion Matrix:
+   [[749 251]
+   [177 823]]
+ACC      : mean=0.7860  std=0.0163
+PRE      : mean=0.7666  std=0.0192
+REC      : mean=0.8230  std=0.0112
+F1       : mean=0.7937  std=0.0145
+AUC      : mean=0.8668  std=0.0077
+MSE      : mean=0.1492  std=0.0048
+
+#### kaggle accuracy
+- public: 0.69641
+- private: 
+
+### v6b修改建議
+- 使用v6b原因
+  - AUC 0.867，std 0.0077 → 表現最好且穩定
+- v6b建議修改
+  - **Ensemble 兩個模型的分數**: 把 all-mpnet-base-v2 和 twitter-roberta 的嵌入都產出來，拼接在一起當特徵。兩個模型學到的表示不同，合併後給分類模型更多角度，通常比單一模型更穩。
+  - **針對你的資料微調 Roberta**: twitter-roberta 是別人在推特上微調的，如果你拿自己的 2000 筆資料再微調一輪，讓模型適應你的語料分佈，AUC 還有機會再往上走。
+  - **觀察還在錯的樣本**: confusion matrix 裡還有 251 + 177 = 428 筆錯誤。把這些樣本印出來看，通常能發現模型系統性搞錯的模式，比盲目調參更有效。
+  
