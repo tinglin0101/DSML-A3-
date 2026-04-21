@@ -1,19 +1,20 @@
 """
-End-to-End Sentiment Scoring Pipeline  —  v6b
+End-to-End Sentiment Scoring Pipeline  —  v6c
 =============================================
-v6b change: replaced Sentence-BERT with cardiffnlp/twitter-roberta-base-sentiment.
-  Embedding: CLS token from the final hidden layer (768-dim).
-  Model: cardiffnlp/twitter-roberta-base-sentiment  (RoBERTa fine-tuned on tweets)
+v6c change: combines both encoders from v6a and v6b.
+  Encoder A : sentence-transformers/all-mpnet-base-v2     (768-dim SBERT)
+  Encoder B : cardiffnlp/twitter-roberta-base-sentiment   (768-dim RoBERTa CLS)
 
   For each row:
     Step 1 — split text at transition words (Stanza)
-    Step 2 — RoBERTa CLS embedding per segment  (768-dim)
-    Aggregate — Sum( emb_i * weight(i) )  where weight(i) = sqrt(i+1)
-  After all rows are aggregated, Step 3 — regression on aggregated features.
+    Step 2A — SBERT weighted-sum aggregation        → 768-dim vector
+    Step 2B — RoBERTa CLS weighted-sum aggregation  → 768-dim vector
+    Concat  — [Step2A | Step2B | VADER]             → 1540-dim feature vector
+  After all rows are aggregated, Step 3 — regression on concatenated features.
 
 Usage:
-    python v6b.py --input dataset_split/train_2022.csv --output row_scores.csv
-    python v6b.py --input dataset_split/train_2022.csv --model rf
+    python v6c.py --input dataset_split/train_2022.csv --output row_scores_v6c.csv
+    python v6c.py --input dataset_split/train_2022.csv --model rf
 """
 
 import argparse
@@ -24,6 +25,7 @@ import torch
 import numpy as np
 import pandas as pd
 import stanza
+from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from sklearn.linear_model import ElasticNet
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
@@ -40,16 +42,16 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 
+SBERT_MODEL_NAME   = "sentence-transformers/all-mpnet-base-v2"
 ROBERTA_MODEL_NAME = "cardiffnlp/twitter-roberta-base-sentiment"
-SBERT_DIM          = 768        # CLS hidden-state dim for RoBERTa-base
+SBERT_DIM          = 768
+ROBERTA_DIM        = 768
 
-VADER_FEATURES = ["vader_neg", "vader_neu", "vader_pos", "vader_compound"]
+VADER_FEATURES  = ["vader_neg", "vader_neu", "vader_pos", "vader_compound"]
+SBERT_FEATURES  = [f"sbert_{i}"   for i in range(SBERT_DIM)]
+ROBERTA_FEATURES = [f"roberta_{i}" for i in range(ROBERTA_DIM)]
 
-# Aggregated feature columns: one per embedding dimension
-AGG_FEATURES = [f"emb_{i}" for i in range(SBERT_DIM)]
-
-# Combined feature columns fed to the classifier
-ALL_FEATURES = AGG_FEATURES + VADER_FEATURES
+ALL_FEATURES = SBERT_FEATURES + ROBERTA_FEATURES + VADER_FEATURES   # 1540-dim
 
 WEIGHT_SCHEMES = ("sqrt", "uniform", "linear", "log", "decay", "last", "contrast")
 
@@ -60,7 +62,7 @@ TRANSITION_WORDS = {
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 1 — Text splitting  (unchanged from v3)
+# STEP 1 — Text splitting
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _build_stanza_pipeline() -> stanza.Pipeline:
@@ -114,11 +116,26 @@ def split_text(text: str, nlp: stanza.Pipeline) -> list[str]:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 2 — RoBERTa CLS embedding (single segment)
+# STEP 2A — Sentence-BERT embedding
 # ══════════════════════════════════════════════════════════════════════════════
 
-def _build_sbert_model() -> tuple:
-    """Load cardiffnlp RoBERTa tokenizer + model; returns (tokenizer, model)."""
+def _build_sbert_model() -> SentenceTransformer:
+    print(f"  Loading Sentence-BERT model '{SBERT_MODEL_NAME}' …")
+    model = SentenceTransformer(SBERT_MODEL_NAME)
+    print(f"  SBERT embedding dim : {SBERT_DIM}")
+    return model
+
+
+def _get_sbert_embedding(sbert: SentenceTransformer, text: str) -> np.ndarray:
+    emb = sbert.encode(text, normalize_embeddings=True, show_progress_bar=False)
+    return emb.astype(np.float32)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# STEP 2B — RoBERTa CLS embedding
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _build_roberta_model() -> tuple:
     print(f"  Loading RoBERTa model '{ROBERTA_MODEL_NAME}' …")
     tokenizer = AutoTokenizer.from_pretrained(ROBERTA_MODEL_NAME)
     model = AutoModelForSequenceClassification.from_pretrained(
@@ -127,28 +144,12 @@ def _build_sbert_model() -> tuple:
     model.eval()
     if torch.cuda.is_available():
         model.cuda()
-    print(f"  Embedding dim : {SBERT_DIM}  (CLS token, last hidden layer)")
+    print(f"  RoBERTa embedding dim : {ROBERTA_DIM}  (CLS token, last hidden layer)")
     return tokenizer, model
 
 
-def _build_vader() -> SentimentIntensityAnalyzer:
-    return SentimentIntensityAnalyzer()
-
-
-def _get_vader_scores(vader: SentimentIntensityAnalyzer, text: str) -> dict:
-    """Return neg/neu/pos/compound scores for the full original text."""
-    scores = vader.polarity_scores(text)
-    return {
-        "vader_neg":      scores["neg"],
-        "vader_neu":      scores["neu"],
-        "vader_pos":      scores["pos"],
-        "vader_compound": scores["compound"],
-    }
-
-
-def _get_embedding(sbert: tuple, text: str) -> np.ndarray:
-    """Return the CLS token embedding (768-dim) from the last hidden layer."""
-    tokenizer, model = sbert
+def _get_roberta_embedding(roberta: tuple, text: str) -> np.ndarray:
+    tokenizer, model = roberta
     device = next(model.parameters()).device
     inputs = tokenizer(text, return_tensors="pt", truncation=True,
                        max_length=512, padding=True)
@@ -163,23 +164,28 @@ def _get_embedding(sbert: tuple, text: str) -> np.ndarray:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# AGGREGATE — Steps 1+2 per row, then weighted sum
+# VADER
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _build_vader() -> SentimentIntensityAnalyzer:
+    return SentimentIntensityAnalyzer()
+
+
+def _get_vader_scores(vader: SentimentIntensityAnalyzer, text: str) -> dict:
+    scores = vader.polarity_scores(text)
+    return {
+        "vader_neg":      scores["neg"],
+        "vader_neu":      scores["neu"],
+        "vader_pos":      scores["pos"],
+        "vader_compound": scores["compound"],
+    }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Weight schemes
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _compute_weights(n: int, scheme: str) -> list:
-    """
-    Return a list of n weights for segment positions 0..n-1.
-
-    Schemes
-    -------
-    sqrt     : sqrt(i+1)                — current default; gentle ramp-up
-    uniform  : 1                        — all segments equally important
-    linear   : i+1                      — linearly increasing; strongly favours end
-    log      : log(i+2)                 — flatter ramp than sqrt
-    decay    : exp(-0.5*i)              — exponential decay; favours opening clause
-    last     : 1 except last seg = 3    — emphasises the concluding segment
-    contrast : first=2, last=2, mid=0.5 — highlights framing and conclusion
-    """
     if scheme == "uniform":
         return [1.0] * n
     if scheme == "linear":
@@ -205,68 +211,74 @@ def _compute_weights(n: int, scheme: str) -> list:
     raise ValueError(f"Unknown weight scheme '{scheme}'. Choose from: {WEIGHT_SCHEMES}")
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# AGGREGATE — Steps 1+2A+2B per row, then weighted sum, then concat
+# ══════════════════════════════════════════════════════════════════════════════
+
 def process_row(text: str, label: int, row_id: int,
-                nlp: stanza.Pipeline, sbert,
+                nlp: stanza.Pipeline,
+                sbert: SentenceTransformer,
+                roberta: tuple,
                 vader: SentimentIntensityAnalyzer,
                 weight_scheme: str = "sqrt") -> dict:
     """
-    Run Step 1 (split) + Step 2 (Sentence-BERT) on a single row, then aggregate:
-        agg_emb = Sum_i( emb_i * weight(i) )
-    Also appends VADER scores computed on the full original text.
+    Run Step 1 (split) + Step 2A (SBERT) + Step 2B (RoBERTa) on a single row,
+    aggregate each encoder independently via weighted sum, then concatenate:
+        features = [sbert_agg | roberta_agg | vader]  →  1540-dim
 
-    Returns a flat dict:  row_id, LABEL, NUM_SPLITS, emb_0…emb_383, vader_neg/neu/pos/compound
+    Returns a flat dict with: row_id, LABEL, NUM_SPLITS,
+                               sbert_0…sbert_767, roberta_0…roberta_767,
+                               vader_neg/neu/pos/compound
     """
-    # Step 1 — split
     segments = split_text(text, nlp)
     n = len(segments)
-
     weights = _compute_weights(n, weight_scheme)
 
-    # Step 2 + aggregate
-    agg_emb = np.zeros(SBERT_DIM, dtype=np.float32)
+    agg_sbert   = np.zeros(SBERT_DIM,   dtype=np.float32)
+    agg_roberta = np.zeros(ROBERTA_DIM, dtype=np.float32)
+
     for i, seg in enumerate(segments):
-        emb = _get_embedding(sbert, seg)
-        agg_emb += emb * weights[i]
+        agg_sbert   += _get_sbert_embedding(sbert, seg)   * weights[i]
+        agg_roberta += _get_roberta_embedding(roberta, seg) * weights[i]
 
     result = {"row_id": row_id, "LABEL": label, "NUM_SPLITS": n}
-    for j, val in enumerate(agg_emb):
-        result[f"emb_{j}"] = round(float(val), 6)
-
-    # VADER on the full sentence
+    for j, val in enumerate(agg_sbert):
+        result[f"sbert_{j}"] = round(float(val), 6)
+    for j, val in enumerate(agg_roberta):
+        result[f"roberta_{j}"] = round(float(val), 6)
     result.update(_get_vader_scores(vader, text))
     return result
 
 
-def run_row_by_row(df: pd.DataFrame, nlp: stanza.Pipeline,
-                   sbert,
+def run_row_by_row(df: pd.DataFrame,
+                   nlp: stanza.Pipeline,
+                   sbert: SentenceTransformer,
+                   roberta: tuple,
                    vader: SentimentIntensityAnalyzer,
                    has_label: bool = True,
                    weight_scheme: str = "sqrt") -> pd.DataFrame:
-    """
-    Process every row through Steps 1–2 individually and return
-    one aggregated-feature row per original row.
-    """
     total = len(df)
-    print(f"  Processing {total} rows (step 1+2 per row) …")
+    print(f"  Processing {total} rows (step 1+2A+2B per row) …")
 
     records = []
     for i, (_, row) in enumerate(df.iterrows()):
-        if i % 1000 == 0:
+        if i % 200 == 0:
             print(f"    progress: {i}/{total}")
         label = int(row["LABEL"]) if has_label else -1
         records.append(
-            process_row(str(row["TEXT"]), label, int(row["row_id"]), nlp, sbert, vader,
+            process_row(str(row["TEXT"]), label, int(row["row_id"]),
+                        nlp, sbert, roberta, vader,
                         weight_scheme=weight_scheme)
         )
 
-    cols = ["row_id", "LABEL", "NUM_SPLITS"] + AGG_FEATURES + VADER_FEATURES
+    cols = ["row_id", "LABEL", "NUM_SPLITS"] + SBERT_FEATURES + ROBERTA_FEATURES + VADER_FEATURES
     result_df = pd.DataFrame(records)[cols]
-    print(f"  Done — {len(result_df)} aggregated rows")
+    print(f"  Done — {len(result_df)} aggregated rows  (feature dim: {len(ALL_FEATURES)})")
     return result_df
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 3 — Regression scoring
+# STEP 3 — Regression / Classification
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _make_model(model_name: str):
@@ -303,31 +315,28 @@ def _print_fold_metrics(fold: int, y_true: np.ndarray, y_pred_label: np.ndarray,
 
 def run_cross_validation(agg_df: pd.DataFrame, model_name: str, n_splits: int = 5):
     """
-    5-fold stratified cross-validation on the aggregated SBERT feature matrix.
-    Prints per-fold confusion matrix + metrics, then the mean ± std summary.
-
+    5-fold stratified cross-validation on the concatenated feature matrix.
     Returns: (output_df, trained_pipe_on_full_data, feat_cols)
     """
-    print(f"  Model: {model_name}  |  Features: {SBERT_DIM}-dim SBERT + 4 VADER")
+    total_dim = len(ALL_FEATURES)
+    print(f"  Model: {model_name}  |  Features: {SBERT_DIM}-dim SBERT + {ROBERTA_DIM}-dim RoBERTa + 4 VADER = {total_dim}-dim")
     print(f"  Running {n_splits}-fold stratified cross-validation …")
 
-    feat_cols = ALL_FEATURES
-    X = agg_df[feat_cols].values
+    X = agg_df[ALL_FEATURES].values
     y = agg_df["LABEL"].values
 
-    skf     = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
+    skf          = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
     fold_metrics = []
     oof_scores   = np.zeros(len(y))
 
     for fold, (train_idx, val_idx) in enumerate(skf.split(X, y), start=1):
         pipe = Pipeline([("scaler", StandardScaler()), ("model", _make_model(model_name))])
         pipe.fit(X[train_idx], y[train_idx])
-        scores        = np.clip(pipe.predict(X[val_idx]), 0, 1)
-        pred_labels   = (scores >= 0.5).astype(int)
-        oof_scores[val_idx] = scores
+        scores               = np.clip(pipe.predict(X[val_idx]), 0, 1)
+        pred_labels          = (scores >= 0.5).astype(int)
+        oof_scores[val_idx]  = scores
         fold_metrics.append(_print_fold_metrics(fold, y[val_idx], pred_labels, scores))
 
-    # ── Overall OOF metrics ───────────────────────────────────────────────────
     oof_labels = (oof_scores >= 0.5).astype(int)
     print("\n  ══ Overall OOF (out-of-fold) ═══════════════════════")
     print(f"  Confusion Matrix:\n{confusion_matrix(y, oof_labels)}")
@@ -335,59 +344,17 @@ def run_cross_validation(agg_df: pd.DataFrame, model_name: str, n_splits: int = 
         vals = [m[metric] for m in fold_metrics]
         print(f"  {metric.upper():9s}: mean={np.mean(vals):.4f}  std={np.std(vals):.4f}")
 
-    # ── Retrain on full data ──────────────────────────────────────────────────
     print("\n  Retraining on full dataset …")
     final_pipe = Pipeline([("scaler", StandardScaler()), ("model", _make_model(model_name))])
     final_pipe.fit(X, y)
-    final_scores  = np.clip(final_pipe.predict(X), 0, 1)
+    final_scores = np.clip(final_pipe.predict(X), 0, 1)
 
     output = agg_df[["row_id", "LABEL"]].copy().rename(columns={"LABEL": "row_label"})
     output["oof_score"]       = oof_scores
     output["oof_pred_label"]  = oof_labels
     output["final_score"]     = final_scores
     output["predicted_label"] = (final_scores >= 0.5).astype(int)
-    return output, final_pipe, feat_cols
-
-
-def run_regression(agg_df: pd.DataFrame, model_name: str):
-    """
-    Train a regression model on the aggregated Sentence-BERT feature matrix.
-
-    Returns: (output_df, trained_pipe, feat_cols)
-    """
-    print(f"  Model: {model_name}  |  Features: {SBERT_DIM}-dim SBERT + 4 VADER")
-
-    feat_cols = ALL_FEATURES
-    X = agg_df[feat_cols].values
-    y = agg_df["LABEL"].values
-
-    pipe = Pipeline([("scaler", StandardScaler()), ("model", _make_model(model_name))])
-
-    if len(agg_df) >= 10:
-        X_train, X_val, y_train, y_val = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
-        pipe.fit(X_train, y_train)
-        val_scores = np.clip(pipe.predict(X_val), 0, 1)
-        mse = mean_squared_error(y_val, val_scores)
-        try:
-            auc = roc_auc_score(y_val, val_scores)
-            print(f"  [Regression] train={len(X_train)} | val={len(X_val)} | "
-                  f"MSE={mse:.4f} | AUC={auc:.4f}")
-        except Exception:
-            print(f"  [Regression] train={len(X_train)} | val={len(X_val)} | MSE={mse:.4f}")
-        final_scores = np.clip(pipe.predict(X), 0, 1)
-    else:
-        pipe.fit(X, y)
-        final_scores = np.clip(pipe.predict(X), 0, 1)
-        mse = mean_squared_error(y, final_scores)
-        print(f"  [Regression] rows={len(agg_df)} | MSE={mse:.4f} (too few for split)")
-
-    output = agg_df[["row_id", "LABEL"]].copy().rename(columns={"LABEL": "row_label"})
-    output["final_score"]     = final_scores
-    output["predicted_label"] = (final_scores >= 0.5).astype(int)
-    return output, pipe, feat_cols
-
+    return output, final_pipe, ALL_FEATURES
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -396,31 +363,33 @@ def run_regression(agg_df: pd.DataFrame, model_name: str):
 
 def main():
     path = "D:\\[課程]DSML\\DSML-A3-\\"
-    parser = argparse.ArgumentParser(description="End-to-end sentiment scoring pipeline v6b")
-    parser.add_argument("--input",  default=path + "train_2022.csv",
+    parser = argparse.ArgumentParser(description="End-to-end sentiment scoring pipeline v6c")
+    parser.add_argument("--input",       default=path + "train_2022.csv",
                         help="Input CSV with columns: row_id, TEXT, LABEL")
-    parser.add_argument("--output", default=path + "row_scores_v6b.csv",
+    parser.add_argument("--output",      default=path + "row_scores_v6c.csv",
                         help="Output CSV with row-level scores")
-    parser.add_argument("--model",  default="rf",
+    parser.add_argument("--model",       default="rf",
                         choices=["rf", "elastic", "gbm"],
                         help="Regression model (default: rf)")
-    parser.add_argument("--test",   default=path + "test_no_answer_2022.csv",
+    parser.add_argument("--test",        default=path + "test_no_answer_2022.csv",
                         help="Test CSV (row_id, TEXT)")
-    parser.add_argument("--test-output", default=path + "result_v6b.csv",
+    parser.add_argument("--test-output", default=path + "result_v6c.csv",
                         help="Output CSV for test predictions")
-    parser.add_argument("--weight", default="sqrt",
+    parser.add_argument("--weight",      default="sqrt",
                         choices=list(WEIGHT_SCHEMES),
                         help="Segment weighting scheme (default: sqrt)")
     args = parser.parse_args()
 
     sep = "=" * 60
     print(f"\n{sep}")
-    print("  End-to-End Sentiment Scoring Pipeline  [v6b]")
+    print("  End-to-End Sentiment Scoring Pipeline  [v6c]")
     print(sep)
     print(f"  Input    : {args.input}")
     print(f"  Output   : {args.output}")
     print(f"  Model    : {args.model}")
-    print(f"  Encoder  : {ROBERTA_MODEL_NAME}  ({SBERT_DIM}-dim CLS)")
+    print(f"  Encoder A: {SBERT_MODEL_NAME}  ({SBERT_DIM}-dim)")
+    print(f"  Encoder B: {ROBERTA_MODEL_NAME}  ({ROBERTA_DIM}-dim CLS)")
+    print(f"  Features : {len(ALL_FEATURES)}-dim total")
     print(f"  Weighting: {args.weight}\n")
 
     # ── Load ──────────────────────────────────────────────────────────────────
@@ -429,23 +398,25 @@ def main():
     df["LABEL"]  = df["LABEL"].astype(int)
     print(f"  Loaded {len(df)} rows | {df['row_id'].nunique()} unique row_ids\n")
 
-    # ── Build NLP + Sentence-BERT models ─────────────────────────────────────
+    # ── Build models ──────────────────────────────────────────────────────────
     print("── Initialising models ─────────────────────────────────────")
-    nlp   = _build_stanza_pipeline()
-    sbert = _build_sbert_model()   # returns (tokenizer, model) tuple
-    vader = _build_vader()
+    nlp     = _build_stanza_pipeline()
+    sbert   = _build_sbert_model()
+    roberta = _build_roberta_model()
+    vader   = _build_vader()
 
-    # ── Steps 1+2: row-by-row split → SBERT embedding → weighted sum ─────────
-    print("\n── Steps 1+2: Split + Sentence-BERT Embedding (row-by-row) ─")
-    agg_df = run_row_by_row(df, nlp, sbert, vader, has_label=True, weight_scheme=args.weight)
+    # ── Steps 1+2A+2B: split → dual embedding → weighted sum → concat ─────────
+    print("\n── Steps 1+2A+2B: Split + Dual Embedding (row-by-row) ──────")
+    agg_df = run_row_by_row(df, nlp, sbert, roberta, vader,
+                            has_label=True, weight_scheme=args.weight)
 
-    # ── Step 3: 5-Fold Cross-Validation + Regression Scoring ─────────────────
+    # ── Step 3: 5-Fold CV + Regression Scoring ────────────────────────────────
     print("\n── Step 3: 5-Fold CV + Regression Scoring ──────────────────")
     row_scores, trained_pipe, feat_cols = run_cross_validation(agg_df, args.model, n_splits=5)
 
     # ── Save training scores ──────────────────────────────────────────────────
-    # row_scores.to_csv(args.output, index=False)
-    # print(f"\n  Saved training results to: {args.output}")
+    row_scores.to_csv(args.output, index=False)
+    print(f"\n  Saved training results to: {args.output}")
 
     # ── Process test set ──────────────────────────────────────────────────────
     print(f"\n── Processing test set: {args.test} ────────────────────────")
@@ -455,18 +426,18 @@ def main():
         test_df["LABEL"] = -1
     print(f"  Loaded {len(test_df)} test rows\n")
 
-    test_agg_df = run_row_by_row(test_df, nlp, sbert, vader,
+    test_agg_df = run_row_by_row(test_df, nlp, sbert, roberta, vader,
                                  has_label=False, weight_scheme=args.weight)
 
-    X_test = test_agg_df[feat_cols].values
+    X_test      = test_agg_df[feat_cols].values
     test_scores = np.clip(trained_pipe.predict(X_test), 0, 1)
     test_labels = (test_scores >= 0.5).astype(int)
 
     test_output = test_agg_df[["row_id"]].copy()
-    # test_output["predicted_score"] = test_scores
     test_output["LABEL"] = test_labels
     test_output.to_csv(args.test_output, index=False)
     print(f"  Saved test predictions to: {args.test_output}")
+
 
 if __name__ == "__main__":
     main()
