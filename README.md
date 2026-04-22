@@ -61,21 +61,7 @@
 
 ## Embedding 策略
 
-每筆文本直接編碼為單一 768-dim L2-normalized 向量（無分段）。
-
-權重方案（`CFG["weight"]`）可選：
-
-| 方案 | 說明 |
-|------|------|
-| `sqrt` | 越後面的片段權重越高（√i） |
-| `uniform` | 等權 |
-| `linear` | 線性遞增 |
-| `log` | 對數遞增 |
-| `decay` | 指數衰減（強調前段） |
-| `last` | 最後一段權重 ×3 |
-| `contrast` | 首尾段權重 ×2，中間 ×0.5 |
-
-> baseline 僅有單一片段，故權重方案在目前版本實際上無差異。
+每筆文本直接編碼為單一 768-dim L2-normalized 向量。
 
 ---
 
@@ -86,15 +72,6 @@
 - **評估**：5-Fold Stratified Cross-Validation
 - **閾值**：score ≥ 0.5 → LABEL=1
 
-### baseline 交叉驗證結果
-
-| 指標 | Mean | Std |
-|------|------|-----|
-| ACC  | 0.9540 | 0.0093 |
-| F1   | 0.9543 | 0.0090 |
-| AUC  | 0.9805 | 0.0053 |
-| MSE  | 0.0390 | 0.0051 |
-
 ---
 
 ## 主要設定（CFG）
@@ -102,7 +79,6 @@
 ```python
 CFG = {
     "model":       "rf",          # rf | elastic | gbm
-    "weight":      "sqrt",        # embedding 加權方式
     "skip_da":     False,         # 是否跳過 Phase 1
     "load_da":     None,          # 載入已存 Phase 1 checkpoint 路徑
     "skip_ft":     False,         # 是否只做 Phase 1 後退出
