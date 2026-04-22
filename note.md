@@ -159,7 +159,7 @@ MSE      : mean=0.2085  std=0.0040
   AUC      : mean=0.7527  std=0.0052
   MSE      : mean=0.2092  std=0.0020
 
-## v5 新增vader特徵(v5.py)
+## v5 新增vader特徵
 Confusion Matrix:
    [[716 284]
    [316 684]]
@@ -172,7 +172,7 @@ MSE      : mean=0.1981  std=0.0064
 
 ## v6 更改 embedding model
 
-### v6a: all-MiniLM-L6-v2 改成 all-mpnet-base-v(v6a.py)
+### v6a: all-MiniLM-L6-v2 改成 all-mpnet-base-v
 Confusion Matrix:
    [[749 251]
    [241 759]]
@@ -189,7 +189,7 @@ kaggle accuracy
 - public: 0.72672
 - private: 
 
-### v6b: sentence-transformers/all-MiniLM-L6-v2 改成 cardiffnlp/twitter-roberta-base-sentiment(v6b.py)
+### v6b: sentence-transformers/all-MiniLM-L6-v2 改成 cardiffnlp/twitter-roberta-base-sentiment
 Confusion Matrix:
    [[749 251]
    [177 823]]
@@ -200,15 +200,96 @@ F1       : mean=0.7937  std=0.0145
 AUC      : mean=0.8668  std=0.0077
 MSE      : mean=0.1492  std=0.0048
 
-#### kaggle accuracy
+---
+kaggle accuracy
 - public: 0.69641
 - private: 
 
-### v6b修改建議
+#### v6b修改建議
 - 使用v6b原因
   - AUC 0.867，std 0.0077 → 表現最好且穩定
 - v6b建議修改
   - **Ensemble 兩個模型的分數**: 把 all-mpnet-base-v2 和 twitter-roberta 的嵌入都產出來，拼接在一起當特徵。兩個模型學到的表示不同，合併後給分類模型更多角度，通常比單一模型更穩。
   - **針對你的資料微調 Roberta**: twitter-roberta 是別人在推特上微調的，如果你拿自己的 2000 筆資料再微調一輪，讓模型適應你的語料分佈，AUC 還有機會再往上走。
   - **觀察還在錯的樣本**: confusion matrix 裡還有 251 + 177 = 428 筆錯誤。把這些樣本印出來看，通常能發現模型系統性搞錯的模式，比盲目調參更有效。
-  
+
+### v6c: Ensemble 兩個模型的分數
+- 方法
+   - Step 1 — split text at transition words (Stanza)
+   - Step 2A — SBERT weighted-sum aggregation        → 768-dim vector
+   - Step 2B — RoBERTa CLS weighted-sum aggregation  → 768-dim vector
+   - Concat  — [Step2A | Step2B | VADER]             → 1540-dim feature vector
+- 結果
+  Confusion Matrix:
+   [[749 251]
+   [168 832]]
+  ACC      : mean=0.7905  std=0.0112
+  PRE      : mean=0.7685  std=0.0143
+  REC      : mean=0.8320  std=0.0108
+  F1       : mean=0.7989  std=0.0098
+  AUC      : mean=0.8739  std=0.0064
+  MSE      : mean=0.1458  std=0.0041
+
+---
+kaggle accuracy
+- public: 0.70523
+- private: 
+
+### v6b-finetune
+- based on v6b.py
+- finetune(80%)
+  - Epoch 1/3  loss=0.4690  acc=0.7863
+  - Epoch 2/3  loss=0.3002  acc=0.8781
+  - Epoch 3/3  loss=0.1957  acc=0.9394
+- 結果(400筆)
+  Confusion Matrix:
+   [[166  42]
+   [ 31 161]]
+  Accuracy  : 0.8175
+  Precision : 0.7931
+  Recall    : 0.8385
+  F1        : 0.8152
+  AUC       : 0.8788
+  MSE       : 0.1533
+
+---
+kaggle accuracy
+- public: **0.36308**
+- private: 
+
+## v7: 新增領域標籤
+- 標籤預處理: category.py
+- 結果
+   Confusion Matrix:
+      [[767 233]
+      [167 833]]
+   ACC      : mean=0.8000  std=0.0143
+   PRE      : mean=0.7818  std=0.0182
+   REC      : mean=0.8330  std=0.0098
+   F1       : mean=0.8065  std=0.0123
+   AUC      : mean=0.8781  std=0.0053
+   MSE      : mean=0.1425  std=0.0035
+
+## v8:  2階段微調SBERT
+- 訓練:
+  - Epoch 1
+    - epoch 1/3  step 50/188  loss=0.2830
+    - epoch 1/3  step 100/188  loss=0.2668
+    - epoch 1/3  step 150/188  loss=0.2426
+    - avg loss: 0.2296
+  - Epoch 2
+    - epoch 2/3  step 50/188  loss=0.1358
+    - epoch 2/3  step 100/188  loss=0.1284
+    - epoch 2/3  step 150/188  loss=0.1199
+    - avg loss: 0.1149
+  - Epoch 3
+    - epoch 3/3  step 50/188  loss=0.0534
+    - epoch 3/3  step 100/188  loss=0.0519
+    - epoch 3/3  step 150/188  loss=0.0505
+    - avg loss: 0.0470
+- kaggle: 
+  - public: 0.76556 / 0.77410(no vadar, no nlp)
+  - private: 
+- 可修改: 
+  - SBERT 的向量餵入像是羅吉斯迴歸(直接計算餘弦相似度（Cosine-similarity）效果不一定好，因為餘弦相似度會將向量的所有維度視為同等重要。論文在 SentEval 測試中發現，將 SBERT 的向量餵入像是羅吉斯迴歸（或如您使用的 Random Forest）等分類器，能讓模型自動學習到哪些特定的「維度」對判斷情緒有更高的影響力，並賦予它們較高的權重。)
+  -  實驗不同的「池化策略（Pooling Strategies）」 SBERT 透過在 BERT 輸出後加入「池化層」來產生固定長度的向量，預設策略是 MEAN（取平均），但模型也提供了 MAX（取最大值）與 CLS 策略。消融實驗（Ablation Study）證實，針對不同的任務與目標函數，池化策略的選擇會對模型表現產生很大的影響。您可以嘗試提取 MAX 或 CLS 的特徵向量來訓練您的 Random Forest，看看哪一種更能精準捕捉情緒。
