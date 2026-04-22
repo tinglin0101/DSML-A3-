@@ -1,9 +1,9 @@
 import pandas as pd
 
 # 1. 讀取資料集 (請確認檔名與路徑正確)
-base_path = "D:\\[課程]DSML\\DSML-A3-\\"
+base_path = ""
 # df = pd.read_csv(base_path + "train_2022.csv") 
-df = pd.read_csv(base_path + "test_no_answer_2022.csv") 
+df = pd.read_csv(base_path + "train_2022.csv") 
 
 # 2. 定義三大領域的專屬關鍵字字典 (全小寫)
 movie_kw = ['movie', 'film', 'director', 'comedy', 'drama', 'scene', 'screen', 'cinema', 'actor', 'actress', 'watch', 'story']
@@ -39,7 +39,7 @@ def categorize(text):
 
 # 4. 將分類函數應用到 TEXT 欄位，並建立新的 category 欄位
 df['category'] = df['TEXT'].apply(categorize)
-# df.to_csv(base_path + "train_2022_with_category.csv", index=False)  # 儲存帶有 category 欄位的新 CSV
+df.to_csv(base_path + "train_2022_with_category.csv", index=False)  # 儲存帶有 category 欄位的新 CSV
 
 # 5. 印出分析結果 (各類別的數量與百分比)
 print("=== 領域數量統計 ===")
