@@ -1,0 +1,62 @@
+
+============================================================
+  Sentiment Scoring Pipeline  [v8 / no-arg]
+  Two-Phase Fine-Tuning: MLM + CV-internal CosineSimilarityLoss
+  [nlp / vader temporarily disabled]
+============================================================
+  Input      : ./train_2022.csv
+  Test       : ./test_no_answer_2022.csv
+  Model      : rf
+  Encoder    : sentence-transformers/all-mpnet-base-v2  (768-dim)
+  Phase 1    : MLM  epochs=2  lr=3e-05  mlm_prob=0.15
+  Phase 2    : CosineSimilarityLoss (inside CV)  epochs=3  lr=2e-05  pairs=3000
+
+  Loaded 2000 training rows
+  Loaded 11000 test rows
+
+── Initialising models ──
+  Loading base Sentence-BERT 'sentence-transformers/all-mpnet-base-v2' …
+  Embedding dim : 768
+
+── Phase 1: MLM Domain Adaptation ────────────────────────
+  Texts    : 13000 (Train + Test, no labels)
+  Epochs   : 2  |  batch=16  |  lr=3e-05
+  MLM prob : 0.15 (隨機遮蔽 15% tokens)
+    epoch 1/2  step 50/813  loss=10.2208
+    epoch 1/2  step 100/813  loss=9.2272
+    epoch 1/2  step 150/813  loss=8.5206
+    epoch 1/2  step 200/813  loss=7.9814
+    epoch 1/2  step 250/813  loss=7.5670
+    epoch 1/2  step 300/813  loss=7.2097
+    epoch 1/2  step 350/813  loss=6.9470
+    epoch 1/2  step 400/813  loss=6.7185
+    epoch 1/2  step 450/813  loss=6.5011
+    epoch 1/2  step 500/813  loss=6.3434
+    epoch 1/2  step 550/813  loss=6.1896
+    epoch 1/2  step 600/813  loss=6.0530
+    epoch 1/2  step 650/813  loss=5.9400
+    epoch 1/2  step 700/813  loss=5.8376
+    epoch 1/2  step 750/813  loss=5.7317
+    epoch 1/2  step 800/813  loss=5.6389
+  Epoch 1 done — avg loss: 5.6163
+    epoch 2/2  step 50/813  loss=3.9910
+    epoch 2/2  step 100/813  loss=4.0513
+    epoch 2/2  step 150/813  loss=4.0410
+    epoch 2/2  step 200/813  loss=4.0264
+    epoch 2/2  step 250/813  loss=3.9907
+    epoch 2/2  step 300/813  loss=3.9767
+    epoch 2/2  step 350/813  loss=3.9892
+    epoch 2/2  step 400/813  loss=3.9879
+    epoch 2/2  step 450/813  loss=3.9739
+    epoch 2/2  step 500/813  loss=3.9559
+    epoch 2/2  step 550/813  loss=3.9440
+    epoch 2/2  step 600/813  loss=3.9205
+    epoch 2/2  step 650/813  loss=3.9054
+    epoch 2/2  step 700/813  loss=3.8929
+    epoch 2/2  step 750/813  loss=3.8779
+    epoch 2/2  step 800/813  loss=3.8701
+  Epoch 2 done — avg loss: 3.8669
+  Saved adapted model to: ./vbf_d4_da_model.pt
+  Phase 1 complete — encoder adapted to domain vocabulary.
+
+  [skip_ft=True，Phase 1 完成後退出]
