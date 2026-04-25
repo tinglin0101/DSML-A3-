@@ -1,0 +1,28 @@
+══ Single split  train=1600  val=400 ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+{'loss': '0.1208', 'grad_norm': '0.3155', 'learning_rate': '1.221e-05', 'epoch': '1.333'}
+{'loss': '0.02229', 'grad_norm': '0.09301', 'learning_rate': '2.459e-06', 'epoch': '2.667'}
+{'train_runtime': '577.6', 'train_samples_per_second': '15.58', 'train_steps_per_second': '1.948', 'train_loss': '0.06498', 'epoch': '3'}
+  Fine-tuning done.
+  Embedding 1600 rows …
+  Embedding 400 rows …
+
+  ── Fold 1 ──
+  Confusion Matrix:
+[[174  26]
+ [ 35 165]]
+  Acc=0.8475  Pre=0.8639  Rec=0.8250  F1=0.8440  AUC=0.9130  MSE=0.1177
+
+  Retraining on full dataset …
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+{'loss': '0.1321', 'grad_norm': '7.788', 'learning_rate': '1.221e-05', 'epoch': '1.333'}
+{'loss': '0.03481', 'grad_norm': '0.09053', 'learning_rate': '2.459e-06', 'epoch': '2.667'}
+{'train_runtime': '589.1', 'train_samples_per_second': '15.28', 'train_steps_per_second': '1.91', 'train_loss': '0.07638', 'epoch': '3'}
+Writing model shards: 100%
+ 1/1 [00:22<00:00, 22.85s/it]
+  Fine-tuning done.
+  Embedding 2000 rows …
+
+── Test set prediction ──
+  Embedding 11000 rows …
+Saved → ./result_baseline_mxbai.csv  (pos=5438, neg=5562)

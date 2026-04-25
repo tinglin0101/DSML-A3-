@@ -1,0 +1,12 @@
+============================================================
+  mxbai Sentiment Pipeline
+  model=rf  encoder=mixedbread-ai/mxbai-embed-large-v1
+  ft_epochs=3  ft_lr=2e-05  ft_pairs=3000
+============================================================
+Train: 2000 rows  |  pos=1000  neg=1000
+Test : 11000 rows
+
+Loading 'mixedbread-ai/mxbai-embed-large-v1' …
+
+══ Single split  train=1600  val=400 ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
