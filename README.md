@@ -59,3 +59,8 @@ Output is written to `result.csv` with columns `row_id` and `LABEL`.
 |--------|-------------|
 | `row_id` | Original test row identifier |
 | `LABEL` | Predicted label (0 = negative, 1 = positive) |
+
+## Result
+
+- kaggle public(33%): acc 0.8379
+- kaggle private(67%): acc 0.79724
