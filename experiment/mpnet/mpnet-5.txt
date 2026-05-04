@@ -1,0 +1,342 @@
+
+============================================================
+  Sentiment Scoring Pipeline  [v8 / no-arg]
+  Two-Phase Fine-Tuning: MLM + CV-internal CosineSimilarityLoss
+  [nlp / vader temporarily disabled]
+============================================================
+  Input      : ./train_2022.csv
+  Test       : ./test_no_answer_2022.csv
+  Model      : rf
+  Encoder    : sentence-transformers/all-mpnet-base-v2  (768-dim)
+  Phase 1    : LOAD from vbf_d3_da_model.pt
+  Phase 2    : CosineSimilarityLoss (inside CV)  epochs=3  lr=2e-05  pairs=3000
+
+  Loaded 2000 training rows
+  Loaded 11000 test rows
+
+── Initialising models ──
+  Loading base Sentence-BERT 'sentence-transformers/all-mpnet-base-v2' …
+  Embedding dim : 768
+
+  [Phase 1] 載入已存 checkpoint: vbf_d3_da_model.pt
+
+
+── Step 3: 5x 80/20 CV with fine-tune inside each round ──
+  Model: rf  |  Features: 768-dim SBERT = 768-dim
+  Running 5 x 80/20 splits — fine-tune INSIDE each round (no leakage) …
+
+══ Round 1/5  (train=1600, val=400) ══
+
+── Phase 2: Supervised Fine-tuning (CosineSimilarityLoss) ──
+  Train rows  : 1600  |  pairs=3000
+  Epochs      : 3  |  batch=16  |  lr=2e-05
+  Strategy    : same label→sim=1.0, diff label→sim=0.0
+    epoch 1/3  step 50/188  loss=0.2661
+    epoch 1/3  step 100/188  loss=0.2513
+    epoch 1/3  step 150/188  loss=0.2271
+  Epoch 1 done — avg loss: 0.2157
+    epoch 2/3  step 50/188  loss=0.1233
+    epoch 2/3  step 100/188  loss=0.1084
+    epoch 2/3  step 150/188  loss=0.1087
+  Epoch 2 done — avg loss: 0.1007
+    epoch 3/3  step 50/188  loss=0.0454
+    epoch 3/3  step 100/188  loss=0.0460
+    epoch 3/3  step 150/188  loss=0.0431
+  Epoch 3 done — avg loss: 0.0420
+  Phase 2 complete — model now clusters same-sentiment sentences.
+
+  Extracting embeddings for 1600 rows …
+    progress: 0/1600
+    progress: 200/1600
+    progress: 400/1600
+    progress: 600/1600
+    progress: 800/1600
+    progress: 1000/1600
+    progress: 1200/1600
+    progress: 1400/1600
+  Done — 1600 rows embedded  (feature dim: 768)
+  Extracting embeddings for 400 rows …
+    progress: 0/400
+    progress: 200/400
+  Done — 400 rows embedded  (feature dim: 768)
+
+  ── Round 1 ──
+  Confusion Matrix:
+[[176  24]
+ [ 43 157]]
+  Accuracy : 0.8325
+  Precision: 0.8674  Recall: 0.7850  F1: 0.8241
+  AUC      : 0.8956  MSE: 0.1291
+
+══ Round 2/5  (train=1600, val=400) ══
+
+── Phase 2: Supervised Fine-tuning (CosineSimilarityLoss) ──
+  Train rows  : 1600  |  pairs=3000
+  Epochs      : 3  |  batch=16  |  lr=2e-05
+  Strategy    : same label→sim=1.0, diff label→sim=0.0
+    epoch 1/3  step 50/188  loss=0.2742
+    epoch 1/3  step 100/188  loss=0.2577
+    epoch 1/3  step 150/188  loss=0.2338
+  Epoch 1 done — avg loss: 0.2172
+    epoch 2/3  step 50/188  loss=0.1131
+    epoch 2/3  step 100/188  loss=0.1156
+    epoch 2/3  step 150/188  loss=0.1051
+  Epoch 2 done — avg loss: 0.0997
+    epoch 3/3  step 50/188  loss=0.0464
+    epoch 3/3  step 100/188  loss=0.0436
+    epoch 3/3  step 150/188  loss=0.0403
+  Epoch 3 done — avg loss: 0.0395
+  Phase 2 complete — model now clusters same-sentiment sentences.
+
+  Extracting embeddings for 1600 rows …
+    progress: 0/1600
+    progress: 200/1600
+    progress: 400/1600
+    progress: 600/1600
+    progress: 800/1600
+    progress: 1000/1600
+    progress: 1200/1600
+    progress: 1400/1600
+  Done — 1600 rows embedded  (feature dim: 768)
+  Extracting embeddings for 400 rows …
+    progress: 0/400
+    progress: 200/400
+  Done — 400 rows embedded  (feature dim: 768)
+
+  ── Round 2 ──
+  Confusion Matrix:
+[[152  48]
+ [ 28 172]]
+  Accuracy : 0.8100
+  Precision: 0.7818  Recall: 0.8600  F1: 0.8190
+  AUC      : 0.8859  MSE: 0.1470
+
+══ Round 3/5  (train=1600, val=400) ══
+
+── Phase 2: Supervised Fine-tuning (CosineSimilarityLoss) ──
+  Train rows  : 1600  |  pairs=3000
+  Epochs      : 3  |  batch=16  |  lr=2e-05
+  Strategy    : same label→sim=1.0, diff label→sim=0.0
+    epoch 1/3  step 50/188  loss=0.2625
+    epoch 1/3  step 100/188  loss=0.2548
+    epoch 1/3  step 150/188  loss=0.2358
+  Epoch 1 done — avg loss: 0.2210
+    epoch 2/3  step 50/188  loss=0.1295
+    epoch 2/3  step 100/188  loss=0.1156
+    epoch 2/3  step 150/188  loss=0.1047
+  Epoch 2 done — avg loss: 0.0997
+    epoch 3/3  step 50/188  loss=0.0563
+    epoch 3/3  step 100/188  loss=0.0473
+    epoch 3/3  step 150/188  loss=0.0424
+  Epoch 3 done — avg loss: 0.0398
+  Phase 2 complete — model now clusters same-sentiment sentences.
+
+  Extracting embeddings for 1600 rows …
+    progress: 0/1600
+    progress: 200/1600
+    progress: 400/1600
+    progress: 600/1600
+    progress: 800/1600
+    progress: 1000/1600
+    progress: 1200/1600
+    progress: 1400/1600
+  Done — 1600 rows embedded  (feature dim: 768)
+  Extracting embeddings for 400 rows …
+    progress: 0/400
+    progress: 200/400
+  Done — 400 rows embedded  (feature dim: 768)
+
+  ── Round 3 ──
+  Confusion Matrix:
+[[165  35]
+ [ 28 172]]
+  Accuracy : 0.8425
+  Precision: 0.8309  Recall: 0.8600  F1: 0.8452
+  AUC      : 0.9041  MSE: 0.1302
+
+══ Round 4/5  (train=1600, val=400) ══
+
+── Phase 2: Supervised Fine-tuning (CosineSimilarityLoss) ──
+  Train rows  : 1600  |  pairs=3000
+  Epochs      : 3  |  batch=16  |  lr=2e-05
+  Strategy    : same label→sim=1.0, diff label→sim=0.0
+    epoch 1/3  step 50/188  loss=0.2694
+    epoch 1/3  step 100/188  loss=0.2553
+    epoch 1/3  step 150/188  loss=0.2395
+  Epoch 1 done — avg loss: 0.2253
+    epoch 2/3  step 50/188  loss=0.1247
+    epoch 2/3  step 100/188  loss=0.1102
+    epoch 2/3  step 150/188  loss=0.1007
+  Epoch 2 done — avg loss: 0.0948
+    epoch 3/3  step 50/188  loss=0.0422
+    epoch 3/3  step 100/188  loss=0.0466
+    epoch 3/3  step 150/188  loss=0.0464
+  Epoch 3 done — avg loss: 0.0447
+  Phase 2 complete — model now clusters same-sentiment sentences.
+
+  Extracting embeddings for 1600 rows …
+    progress: 0/1600
+    progress: 200/1600
+    progress: 400/1600
+    progress: 600/1600
+    progress: 800/1600
+    progress: 1000/1600
+    progress: 1200/1600
+    progress: 1400/1600
+  Done — 1600 rows embedded  (feature dim: 768)
+  Extracting embeddings for 400 rows …
+    progress: 0/400
+    progress: 200/400
+  Done — 400 rows embedded  (feature dim: 768)
+
+  ── Round 4 ──
+  Confusion Matrix:
+[[170  30]
+ [ 39 161]]
+  Accuracy : 0.8275
+  Precision: 0.8429  Recall: 0.8050  F1: 0.8235
+  AUC      : 0.9059  MSE: 0.1241
+
+══ Round 5/5  (train=1600, val=400) ══
+
+── Phase 2: Supervised Fine-tuning (CosineSimilarityLoss) ──
+  Train rows  : 1600  |  pairs=3000
+  Epochs      : 3  |  batch=16  |  lr=2e-05
+  Strategy    : same label→sim=1.0, diff label→sim=0.0
+    epoch 1/3  step 50/188  loss=0.2677
+    epoch 1/3  step 100/188  loss=0.2564
+    epoch 1/3  step 150/188  loss=0.2379
+  Epoch 1 done — avg loss: 0.2235
+    epoch 2/3  step 50/188  loss=0.1304
+    epoch 2/3  step 100/188  loss=0.1176
+    epoch 2/3  step 150/188  loss=0.1050
+  Epoch 2 done — avg loss: 0.1004
+    epoch 3/3  step 50/188  loss=0.0484
+    epoch 3/3  step 100/188  loss=0.0430
+    epoch 3/3  step 150/188  loss=0.0434
+  Epoch 3 done — avg loss: 0.0418
+  Phase 2 complete — model now clusters same-sentiment sentences.
+
+  Extracting embeddings for 1600 rows …
+    progress: 0/1600
+    progress: 200/1600
+    progress: 400/1600
+    progress: 600/1600
+    progress: 800/1600
+    progress: 1000/1600
+    progress: 1200/1600
+    progress: 1400/1600
+  Done — 1600 rows embedded  (feature dim: 768)
+  Extracting embeddings for 400 rows …
+    progress: 0/400
+    progress: 200/400
+  Done — 400 rows embedded  (feature dim: 768)
+
+  ── Round 5 ──
+  Confusion Matrix:
+[[164  36]
+ [ 29 171]]
+  Accuracy : 0.8375
+  Precision: 0.8261  Recall: 0.8550  F1: 0.8403
+  AUC      : 0.8893  MSE: 0.1386
+
+  ══ Overall (averaged across 5 rounds) ══
+  ACC      : mean=0.8300  std=0.0112
+  PRE      : mean=0.8298  std=0.0279
+  REC      : mean=0.8330  std=0.0317
+  F1       : mean=0.8304  std=0.0103
+  AUC      : mean=0.8962  std=0.0079
+  MSE      : mean=0.1338  std=0.0081
+
+  Retraining on full dataset …
+
+── Phase 2: Supervised Fine-tuning (CosineSimilarityLoss) ──
+  Train rows  : 2000  |  pairs=3000
+  Epochs      : 3  |  batch=16  |  lr=2e-05
+  Strategy    : same label→sim=1.0, diff label→sim=0.0
+    epoch 1/3  step 50/188  loss=0.2675
+    epoch 1/3  step 100/188  loss=0.2558
+    epoch 1/3  step 150/188  loss=0.2364
+  Epoch 1 done — avg loss: 0.2228
+    epoch 2/3  step 50/188  loss=0.1248
+    epoch 2/3  step 100/188  loss=0.1221
+    epoch 2/3  step 150/188  loss=0.1168
+  Epoch 2 done — avg loss: 0.1095
+    epoch 3/3  step 50/188  loss=0.0547
+    epoch 3/3  step 100/188  loss=0.0531
+    epoch 3/3  step 150/188  loss=0.0516
+  Epoch 3 done — avg loss: 0.0513
+  Phase 2 complete — model now clusters same-sentiment sentences.
+
+  Extracting embeddings for 2000 rows …
+    progress: 0/2000
+    progress: 200/2000
+    progress: 400/2000
+    progress: 600/2000
+    progress: 800/2000
+    progress: 1000/2000
+    progress: 1200/2000
+    progress: 1400/2000
+    progress: 1600/2000
+    progress: 1800/2000
+  Done — 2000 rows embedded  (feature dim: 768)
+
+── Processing test set ──
+  Extracting embeddings for 11000 rows …
+    progress: 0/11000
+    progress: 200/11000
+    progress: 400/11000
+    progress: 600/11000
+    progress: 800/11000
+    progress: 1000/11000
+    progress: 1200/11000
+    progress: 1400/11000
+    progress: 1600/11000
+    progress: 1800/11000
+    progress: 2000/11000
+    progress: 2200/11000
+    progress: 2400/11000
+    progress: 2600/11000
+    progress: 2800/11000
+    progress: 3000/11000
+    progress: 3200/11000
+    progress: 3400/11000
+    progress: 3600/11000
+    progress: 3800/11000
+    progress: 4000/11000
+    progress: 4200/11000
+    progress: 4400/11000
+    progress: 4600/11000
+    progress: 4800/11000
+    progress: 5000/11000
+    progress: 5200/11000
+    progress: 5400/11000
+    progress: 5600/11000
+    progress: 5800/11000
+    progress: 6000/11000
+    progress: 6200/11000
+    progress: 6400/11000
+    progress: 6600/11000
+    progress: 6800/11000
+    progress: 7000/11000
+    progress: 7200/11000
+    progress: 7400/11000
+    progress: 7600/11000
+    progress: 7800/11000
+    progress: 8000/11000
+    progress: 8200/11000
+    progress: 8400/11000
+    progress: 8600/11000
+    progress: 8800/11000
+    progress: 9000/11000
+    progress: 9200/11000
+    progress: 9400/11000
+    progress: 9600/11000
+    progress: 9800/11000
+    progress: 10000/11000
+    progress: 10200/11000
+    progress: 10400/11000
+    progress: 10600/11000
+    progress: 10800/11000
+  Done — 11000 rows embedded  (feature dim: 768)
+  Saved test predictions to: ./result_baseline-d3.csv

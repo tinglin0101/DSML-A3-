@@ -1,0 +1,112 @@
+============================================================
+  mxbai Pseudo-labeling Pipeline
+  model=rf  encoder=mixedbread-ai/mxbai-embed-large-v1
+  ft_epochs=1  ft_lr=2e-05  ft_pairs=1000
+  pseudo_rounds=1  pseudo_threshold=0.85
+============================================================
+Train: 2000 rows  |  pos=1000  neg=1000
+Test : 11000 rows
+
+Loading 'mixedbread-ai/mxbai-embed-large-v1' …
+
+── Nested 5-Fold CV (full self-training per fold, val fold never seen) ──
+
+── Nested CV  Fold 1/5 ──
+
+══ Self-training Round 0/1  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=1000  epochs=1  lr=2e-05  batch=16
+    epoch 1  loss=0.22740  grad_norm=3.6629
+  Fine-tuning done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 5018 selected  (pos=2539, neg=2479)  threshold=0.85
+
+══ Self-training Round 1/1  total_train=6618  (labeled=1600, pseudo=5018) ══
+  Fine-tuning: pairs=1000  epochs=1  lr=2e-05  batch=16
+    epoch 1  loss=0.16470  grad_norm=inf
+  Fine-tuning done.
+  Embedding 6618 rows …
+  Embedding 400 rows …
+  → AUC=0.8950  ACC=0.8300  P=0.8235  R=0.8400  F1=0.8317
+
+── Nested CV  Fold 2/5 ──
+
+══ Self-training Round 0/1  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=1000  epochs=1  lr=2e-05  batch=16
+    epoch 1  loss=0.23290  grad_norm=2.9639
+  Fine-tuning done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 4831 selected  (pos=2344, neg=2487)  threshold=0.85
+
+══ Self-training Round 1/1  total_train=6431  (labeled=1600, pseudo=4831) ══
+  Fine-tuning: pairs=1000  epochs=1  lr=2e-05  batch=16
+    epoch 1  loss=0.16500  grad_norm=8.8711
+  Fine-tuning done.
+  Embedding 6431 rows …
+  Embedding 400 rows …
+  → AUC=0.8907  ACC=0.8250  P=0.8009  R=0.8650  F1=0.8317
+
+── Nested CV  Fold 3/5 ──
+
+══ Self-training Round 0/1  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=1000  epochs=1  lr=2e-05  batch=16
+    epoch 1  loss=0.22790  grad_norm=2.3514
+  Fine-tuning done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 4672 selected  (pos=2205, neg=2467)  threshold=0.85
+
+══ Self-training Round 1/1  total_train=6272  (labeled=1600, pseudo=4672) ══
+  Fine-tuning: pairs=1000  epochs=1  lr=2e-05  batch=16
+    epoch 1  loss=0.16460  grad_norm=4.0930
+  Fine-tuning done.
+  Embedding 6272 rows …
+  Embedding 400 rows …
+  → AUC=0.9090  ACC=0.8325  P=0.8308  R=0.8350  F1=0.8329
+
+── Nested CV  Fold 4/5 ──
+
+══ Self-training Round 0/1  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=1000  epochs=1  lr=2e-05  batch=16
+    epoch 1  loss=0.22190  grad_norm=5.4984
+  Fine-tuning done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 4928 selected  (pos=2055, neg=2873)  threshold=0.85
+
+══ Self-training Round 1/1  total_train=6528  (labeled=1600, pseudo=4928) ══
+  Fine-tuning: pairs=1000  epochs=1  lr=2e-05  batch=16
+    epoch 1  loss=0.16220  grad_norm=1.0493
+  Fine-tuning done.
+  Embedding 6528 rows …
+  Embedding 400 rows …
+  → AUC=0.9036  ACC=0.8225  P=0.8308  R=0.8100  F1=0.8203
+
+── Nested CV  Fold 5/5 ──
+
+══ Self-training Round 0/1  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=1000  epochs=1  lr=2e-05  batch=16
+    epoch 1  loss=0.22470  grad_norm=7.8344
+  Fine-tuning done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 4441 selected  (pos=2169, neg=2272)  threshold=0.85
+
+══ Self-training Round 1/1  total_train=6041  (labeled=1600, pseudo=4441) ══
+  Fine-tuning: pairs=1000  epochs=1  lr=2e-05  batch=16
+    epoch 1  loss=0.15510  grad_norm=inf
+  Fine-tuning done.
+  Embedding 6041 rows …
+  Embedding 400 rows …
+  → AUC=0.9206  ACC=0.8500  P=0.8302  R=0.8800  F1=0.8544
+
+════════════════════════════════════════════════════
+  Nested CV Summary (5 folds)
+────────────────────────────────────────────────────
+  AUC    mean=0.9038  std=0.0106
+  ACC    mean=0.8320  std=0.0097
+  PREC   mean=0.8233  std=0.0115
+  REC    mean=0.8460  std=0.0244
+  F1     mean=0.8342  std=0.0111
+════════════════════════════════════════════════════

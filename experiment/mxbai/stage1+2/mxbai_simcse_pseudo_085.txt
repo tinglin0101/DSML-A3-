@@ -1,0 +1,213 @@
+============================================================
+  mxbai SimCSE + Pseudo-labeling Pipeline (5-Fold CV)
+  model=rf  encoder=mixedbread-ai/mxbai-embed-large-v1
+  simcse_epochs=1  simcse_batch=32
+  ft_epochs=3  ft_lr=2e-05  ft_pairs=3000
+  pseudo_rounds=2  pseudo_threshold=0.85
+  cv_folds=5
+============================================================
+Train: 2000 rows  |  pos=1000  neg=1000
+Test : 11000 rows
+
+Loading 'mixedbread-ai/mxbai-embed-large-v1' …
+
+── Proper 5-Fold Cross-Validation ──
+  (each fold: SimCSE on fold_train+test → self_training → eval on fold_val)
+
+════════════════════════════════════════════════════════════
+  CV Fold 1/5  train=1600  val=400
+════════════════════════════════════════════════════════════
+  [SimCSE] n_texts=12600  epochs=1  batch=32  lr=2e-05
+    epoch 1  loss=0.00030  grad_norm=0.0016
+  [SimCSE] Done.
+
+  ── Round 0/2  total_train=1600  (labeled=1600, pseudo=0)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.16210  grad_norm=1.8818
+    epoch 2  loss=0.03930  grad_norm=0.0250
+    epoch 3  loss=0.01540  grad_norm=0.0407
+  [FT] Done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 7412 selected  (pos=4193, neg=3219)  threshold=0.85
+
+  ── Round 1/2  total_train=9012  (labeled=1600, pseudo=7412)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.11840  grad_norm=0.7882
+    epoch 2  loss=0.02500  grad_norm=0.0373
+    epoch 3  loss=0.01170  grad_norm=0.0146
+  [FT] Done.
+  Embedding 9012 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 9185 selected  (pos=5074, neg=4111)  threshold=0.85
+
+  ── Round 2/2  total_train=10785  (labeled=1600, pseudo=9185)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.12860  grad_norm=15.1997
+    epoch 2  loss=0.03470  grad_norm=0.0375
+    epoch 3  loss=0.01400  grad_norm=0.0373
+  [FT] Done.
+  Embedding 10785 rows …
+  Embedding 400 rows …
+
+  Fold 1 result:  AUC=0.8808  ACC=0.8100  P=0.8010  R=0.8250  F1=0.8128
+
+════════════════════════════════════════════════════════════
+  CV Fold 2/5  train=1600  val=400
+════════════════════════════════════════════════════════════
+  [SimCSE] n_texts=12600  epochs=1  batch=32  lr=2e-05
+    epoch 1  loss=0.00030  grad_norm=0.0018
+  [SimCSE] Done.
+
+  ── Round 0/2  total_train=1600  (labeled=1600, pseudo=0)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.17170  grad_norm=2.2556
+    epoch 2  loss=0.04560  grad_norm=0.1094
+    epoch 3  loss=0.02030  grad_norm=0.0332
+  [FT] Done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 8018 selected  (pos=3941, neg=4077)  threshold=0.85
+
+  ── Round 1/2  total_train=9618  (labeled=1600, pseudo=8018)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.13190  grad_norm=1.4582
+    epoch 2  loss=0.03650  grad_norm=0.0362
+    epoch 3  loss=0.01750  grad_norm=0.0732
+  [FT] Done.
+  Embedding 9618 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 9234 selected  (pos=4480, neg=4754)  threshold=0.85
+
+  ── Round 2/2  total_train=10834  (labeled=1600, pseudo=9234)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.14620  grad_norm=0.2797
+    epoch 2  loss=0.04360  grad_norm=3.7787
+    epoch 3  loss=0.01900  grad_norm=0.1029
+  [FT] Done.
+  Embedding 10834 rows …
+  Embedding 400 rows …
+
+  Fold 2 result:  AUC=0.9159  ACC=0.8525  P=0.8730  R=0.8250  F1=0.8483
+
+════════════════════════════════════════════════════════════
+  CV Fold 3/5  train=1600  val=400
+════════════════════════════════════════════════════════════
+  [SimCSE] n_texts=12600  epochs=1  batch=32  lr=2e-05
+    epoch 1  loss=0.00030  grad_norm=0.0023
+  [SimCSE] Done.
+
+  ── Round 0/2  total_train=1600  (labeled=1600, pseudo=0)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.16020  grad_norm=47.8379
+    epoch 2  loss=0.03220  grad_norm=0.0309
+    epoch 3  loss=0.00940  grad_norm=0.4245
+  [FT] Done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 8186 selected  (pos=4072, neg=4114)  threshold=0.85
+
+  ── Round 1/2  total_train=9786  (labeled=1600, pseudo=8186)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.13230  grad_norm=5.4783
+    epoch 2  loss=0.03360  grad_norm=22.3456
+    epoch 3  loss=0.01620  grad_norm=0.0294
+  [FT] Done.
+  Embedding 9786 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 9168 selected  (pos=4492, neg=4676)  threshold=0.85
+
+  ── Round 2/2  total_train=10768  (labeled=1600, pseudo=9168)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.13570  grad_norm=5.0075
+    epoch 2  loss=0.04270  grad_norm=0.0386
+    epoch 3  loss=0.01940  grad_norm=0.0545
+  [FT] Done.
+  Embedding 10768 rows …
+  Embedding 400 rows …
+
+  Fold 3 result:  AUC=0.9006  ACC=0.8425  P=0.8586  R=0.8200  F1=0.8389
+
+════════════════════════════════════════════════════════════
+  CV Fold 4/5  train=1600  val=400
+════════════════════════════════════════════════════════════
+  [SimCSE] n_texts=12600  epochs=1  batch=32  lr=2e-05
+    epoch 1  loss=0.00030  grad_norm=0.0010
+  [SimCSE] Done.
+
+  ── Round 0/2  total_train=1600  (labeled=1600, pseudo=0)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.16370  grad_norm=5.8837
+    epoch 2  loss=0.03940  grad_norm=0.0631
+    epoch 3  loss=0.00950  grad_norm=0.0799
+  [FT] Done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 8361 selected  (pos=4321, neg=4040)  threshold=0.85
+
+  ── Round 1/2  total_train=9961  (labeled=1600, pseudo=8361)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.13860  grad_norm=0.6863
+    epoch 2  loss=0.03550  grad_norm=0.1052
+    epoch 3  loss=0.01460  grad_norm=0.0127
+  [FT] Done.
+  Embedding 9961 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 9462 selected  (pos=4832, neg=4630)  threshold=0.85
+
+  ── Round 2/2  total_train=11062  (labeled=1600, pseudo=9462)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.12990  grad_norm=0.2298
+    epoch 2  loss=0.03540  grad_norm=0.9705
+    epoch 3  loss=0.01420  grad_norm=0.0473
+  [FT] Done.
+  Embedding 11062 rows …
+  Embedding 400 rows …
+
+  Fold 4 result:  AUC=0.8946  ACC=0.8350  P=0.8454  R=0.8200  F1=0.8325
+
+════════════════════════════════════════════════════════════
+  CV Fold 5/5  train=1600  val=400
+════════════════════════════════════════════════════════════
+  [SimCSE] n_texts=12600  epochs=1  batch=32  lr=2e-05
+    epoch 1  loss=0.00030  grad_norm=0.0017
+  [SimCSE] Done.
+
+  ── Round 0/2  total_train=1600  (labeled=1600, pseudo=0)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.17070  grad_norm=8.6574
+    epoch 2  loss=0.04500  grad_norm=0.1473
+    epoch 3  loss=0.02530  grad_norm=0.0788
+  [FT] Done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 7771 selected  (pos=4173, neg=3598)  threshold=0.85
+
+  ── Round 1/2  total_train=9371  (labeled=1600, pseudo=7771)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.14000  grad_norm=10.1308
+    epoch 2  loss=0.03480  grad_norm=0.0428
+    epoch 3  loss=0.01260  grad_norm=0.0205
+  [FT] Done.
+  Embedding 9371 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 9361 selected  (pos=4826, neg=4535)  threshold=0.85
+
+  ── Round 2/2  total_train=10961  (labeled=1600, pseudo=9361)
+  [FT] pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.14540  grad_norm=7.6620
+    epoch 2  loss=0.04650  grad_norm=13.9696
+    epoch 3  loss=0.01670  grad_norm=0.3707
+  [FT] Done.
+  Embedding 10961 rows …
+  Embedding 400 rows …
+
+  Fold 5 result:  AUC=0.9183  ACC=0.8725  P=0.8634  R=0.8850  F1=0.8741
+
+────────────────────────────────────────────────────
+  CV Summary:
+  AUC    mean=0.9021  std=0.0139
+  ACC    mean=0.8425  std=0.0206
+  PREC   mean=0.8483  std=0.0253
+  REC    mean=0.8350  std=0.0251
+  F1     mean=0.8413  std=0.0201

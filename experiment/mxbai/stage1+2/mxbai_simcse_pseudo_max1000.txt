@@ -1,0 +1,312 @@
+============================================================
+  mxbai SimCSE + Pseudo-labeling Pipeline  [5-Fold CV]
+  model=rf  encoder=mixedbread-ai/mxbai-embed-large-v1
+  simcse_epochs=1  simcse_batch=32
+  ft_epochs=3  ft_lr=2e-05  ft_pairs=3000
+  pseudo_rounds=2  pseudo_threshold=0.85
+  max_pseudo_per_class=1000
+============================================================
+Train: 2000 rows  |  pos=1000  neg=1000
+Test : 11000 rows
+
+
+  [Stage 1] SimCSE cache found → loading './mxbai_simcse_model' (skipping training)
+
+============================================================
+  Fold 1/5  train=1600  val=400
+============================================================
+
+══ Self-training Round 0/2  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.15930  grad_norm=3.7569
+    epoch 2  loss=0.03380  grad_norm=0.0648
+    epoch 3  loss=0.01090  grad_norm=0.0357
+    [mem] GPU freed  allocated=2575MB  reserved=2606MB
+  Fine-tuning done.
+  Embedding 1600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2606MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2606MB
+  → Pseudo-labels: 2000 selected  (pos=1000, neg=1000)  threshold=0.85
+
+══ Self-training Round 1/2  total_train=3600  (labeled=1600, pseudo=2000) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.13510  grad_norm=0.2842
+    epoch 2  loss=0.03790  grad_norm=0.0656
+    epoch 3  loss=0.01630  grad_norm=0.0250
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 3600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  → Pseudo-labels: 2000 selected  (pos=1000, neg=1000)  threshold=0.85
+
+══ Self-training Round 2/2  total_train=3600  (labeled=1600, pseudo=2000) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.12100  grad_norm=6.4984
+    epoch 2  loss=0.03180  grad_norm=0.0684
+    epoch 3  loss=0.01400  grad_norm=0.0245
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 3600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 400 rows …
+
+  Fold 1 OOF ── AUC=0.9176  PR-AUC=0.9023  F1=0.8418  Prec=0.8199  Rec=0.8650  Acc=0.8375
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+
+============================================================
+  Fold 2/5  train=1600  val=400
+============================================================
+
+══ Self-training Round 0/2  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.17230  grad_norm=1.9203
+    epoch 2  loss=0.03990  grad_norm=0.0587
+    epoch 3  loss=0.01330  grad_norm=4.1375
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 1600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  → Pseudo-labels: 2000 selected  (pos=1000, neg=1000)  threshold=0.85
+
+══ Self-training Round 1/2  total_train=3600  (labeled=1600, pseudo=2000) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.13160  grad_norm=0.0446
+    epoch 2  loss=0.04300  grad_norm=0.0339
+    epoch 3  loss=0.02090  grad_norm=0.2006
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 3600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  → Pseudo-labels: 2000 selected  (pos=1000, neg=1000)  threshold=0.85
+
+══ Self-training Round 2/2  total_train=3600  (labeled=1600, pseudo=2000) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.12840  grad_norm=0.0788
+    epoch 2  loss=0.03340  grad_norm=0.0228
+    epoch 3  loss=0.01510  grad_norm=0.0592
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 3600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 400 rows …
+
+  Fold 2 OOF ── AUC=0.9238  PR-AUC=0.9081  F1=0.8355  Prec=0.8743  Rec=0.8000  Acc=0.8425
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+
+============================================================
+  Fold 3/5  train=1600  val=400
+============================================================
+
+══ Self-training Round 0/2  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.16120  grad_norm=0.1642
+    epoch 2  loss=0.03160  grad_norm=0.0560
+    epoch 3  loss=0.01120  grad_norm=0.1264
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 1600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  → Pseudo-labels: 2000 selected  (pos=1000, neg=1000)  threshold=0.85
+
+══ Self-training Round 1/2  total_train=3600  (labeled=1600, pseudo=2000) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.13680  grad_norm=14.6677
+    epoch 2  loss=0.04290  grad_norm=0.1764
+    epoch 3  loss=0.02000  grad_norm=0.3097
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 3600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  → Pseudo-labels: 2000 selected  (pos=1000, neg=1000)  threshold=0.85
+
+══ Self-training Round 2/2  total_train=3600  (labeled=1600, pseudo=2000) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.12760  grad_norm=27.3036
+    epoch 2  loss=0.03940  grad_norm=0.4925
+    epoch 3  loss=0.01850  grad_norm=0.0477
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 3600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 400 rows …
+
+  Fold 3 OOF ── AUC=0.9187  PR-AUC=0.9095  F1=0.8372  Prec=0.8663  Rec=0.8100  Acc=0.8425
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+
+============================================================
+  Fold 4/5  train=1600  val=400
+============================================================
+
+══ Self-training Round 0/2  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.15550  grad_norm=3.2671
+    epoch 2  loss=0.03460  grad_norm=0.1657
+    epoch 3  loss=0.01190  grad_norm=0.0251
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 1600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  → Pseudo-labels: 2000 selected  (pos=1000, neg=1000)  threshold=0.85
+
+══ Self-training Round 1/2  total_train=3600  (labeled=1600, pseudo=2000) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.13070  grad_norm=0.1796
+    epoch 2  loss=0.03900  grad_norm=3.7700
+    epoch 3  loss=0.01710  grad_norm=0.0178
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 3600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  → Pseudo-labels: 2000 selected  (pos=1000, neg=1000)  threshold=0.85
+
+══ Self-training Round 2/2  total_train=3600  (labeled=1600, pseudo=2000) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.12860  grad_norm=0.0505
+    epoch 2  loss=0.03650  grad_norm=1.1490
+    epoch 3  loss=0.01490  grad_norm=0.0333
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 3600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 400 rows …
+
+  Fold 4 OOF ── AUC=0.9166  PR-AUC=0.9095  F1=0.8462  Prec=0.8684  Rec=0.8250  Acc=0.8500
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+
+============================================================
+  Fold 5/5  train=1600  val=400
+============================================================
+
+══ Self-training Round 0/2  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.16980  grad_norm=0.3010
+    epoch 2  loss=0.03590  grad_norm=0.0371
+    epoch 3  loss=0.01740  grad_norm=0.0215
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 1600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  → Pseudo-labels: 2000 selected  (pos=1000, neg=1000)  threshold=0.85
+
+══ Self-training Round 1/2  total_train=3600  (labeled=1600, pseudo=2000) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.13070  grad_norm=0.0470
+    epoch 2  loss=0.03750  grad_norm=0.0328
+    epoch 3  loss=0.01950  grad_norm=0.0210
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 3600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  → Pseudo-labels: 2000 selected  (pos=1000, neg=1000)  threshold=0.85
+
+══ Self-training Round 2/2  total_train=3600  (labeled=1600, pseudo=2000) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.13490  grad_norm=0.1256
+    epoch 2  loss=0.03660  grad_norm=0.1039
+    epoch 3  loss=0.01870  grad_norm=0.0255
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 3600 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 400 rows …
+
+  Fold 5 OOF ── AUC=0.9150  PR-AUC=0.8928  F1=0.8395  Prec=0.8293  Rec=0.8500  Acc=0.8375
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+
+============================================================
+  Per-fold averages:
+    auc        mean=0.9183  std=0.0030
+    pr_auc     mean=0.9044  std=0.0064
+    f1         mean=0.8400  std=0.0037
+    precision  mean=0.8516  std=0.0224
+    recall     mean=0.8300  std=0.0243
+    accuracy   mean=0.8420  std=0.0046
+
+  Overall OOF ── AUC=0.9181  PR-AUC=0.9034  F1=0.8401  Prec=0.8504  Rec=0.8300  Acc=0.8420
+============================================================
+OOF saved → ./mxbai_simcse_pseudo_no_1000_5-fold_oof.csv
+Saved → ./mxbai_simcse_pseudo_no_1000_5-fold_result.csv  (pos=5483, neg=5517)
+
+
+Train: 2000 rows  |  pos=1000  neg=1000
+Test : 11000 rows
+
+
+  [Stage 1] SimCSE cache found → loading './mxbai_simcse_model' (skipping training)
+
+══ Self-training Round 0/2  total_train=2000  (labeled=2000, pseudo=0) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.17990  grad_norm=3.1569
+    epoch 2  loss=0.05190  grad_norm=0.3549
+    epoch 3  loss=0.02010  grad_norm=0.1764
+    [mem] GPU freed  allocated=2575MB  reserved=2606MB
+  Fine-tuning done.
+  Embedding 2000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2606MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2606MB
+  → Pseudo-labels: 2000 selected  (pos=1000, neg=1000)  threshold=0.85
+
+══ Self-training Round 1/2  total_train=4000  (labeled=2000, pseudo=2000) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.14320  grad_norm=2.2897
+    epoch 2  loss=0.04920  grad_norm=0.0333
+    epoch 3  loss=0.02590  grad_norm=0.0819
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 4000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  → Pseudo-labels: 2000 selected  (pos=1000, neg=1000)  threshold=0.85
+
+══ Self-training Round 2/2  total_train=4000  (labeled=2000, pseudo=2000) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.13450  grad_norm=5.6527
+    epoch 2  loss=0.04190  grad_norm=7.5658
+    epoch 3  loss=0.01930  grad_norm=0.0725
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 4000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+
+── Test set prediction ──
+  Embedding 11000 rows …
+Saved → ./mxbai_simcse_pseudo_no_1000_result.csv  (pos=6117, neg=4883)
+

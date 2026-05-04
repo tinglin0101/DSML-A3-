@@ -1,0 +1,28 @@
+============================================================
+  mxbai SimCSE Two-stage Pipeline
+  model=rf  encoder=mixedbread-ai/mxbai-embed-large-v1
+  simcse_epochs=1  simcse_batch=64
+  ft_epochs=3  ft_lr=2e-05  ft_pairs=3000
+============================================================
+Train: 2000 rows  |  pos=1000  neg=1000
+Test : 11000 rows
+
+Loading 'mixedbread-ai/mxbai-embed-large-v1' …
+
+══ Two-stage fine-tuning ══
+  Total texts for SimCSE: 13000  (train=2000, test=11000)
+  [Stage 1] SimCSE unsupervised  n_texts=13000  epochs=1  batch=64  lr=2e-05
+    epoch 1  loss=0.00080  grad_norm=0.0003
+  [Stage 1] Done.
+  [Stage 2] Supervised fine-tune  pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.19860  grad_norm=2.6013
+    epoch 2  loss=0.06000  grad_norm=0.5318
+    epoch 3  loss=0.02310  grad_norm=2.1246
+  [Stage 2] Done.
+  Embedding 2000 rows …
+
+
+
+── Test set prediction ──
+  Embedding 11000 rows …
+Saved → ./simcsemxbai_simcse_1_5_fold_result.csv  (pos=6192, neg=4808)

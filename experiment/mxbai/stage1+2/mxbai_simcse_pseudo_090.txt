@@ -1,0 +1,54 @@
+============================================================
+  mxbai SimCSE + Pseudo-labeling Pipeline
+  model=rf  encoder=mixedbread-ai/mxbai-embed-large-v1
+  simcse_epochs=1  simcse_batch=64
+  ft_epochs=3  ft_lr=2e-05  ft_pairs=3000
+  pseudo_rounds=2  pseudo_threshold=0.9
+============================================================
+Train: 2000 rows  |  pos=1000  neg=1000
+Test : 11000 rows
+
+
+  [Stage 1] SimCSE cache found → loading './mxbai_simcse_model' (skipping training)
+
+══ Self-training Round 0/2  total_train=2000  (labeled=2000, pseudo=0) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.17990  grad_norm=3.1569
+    epoch 2  loss=0.05190  grad_norm=0.3549
+    epoch 3  loss=0.02010  grad_norm=0.1764
+    [mem] GPU freed  allocated=2575MB  reserved=2606MB
+  Fine-tuning done.
+  Embedding 2000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2606MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2606MB
+  → Pseudo-labels: 7016 selected  (pos=3736, neg=3280)  threshold=0.9
+
+══ Self-training Round 1/2  total_train=9016  (labeled=2000, pseudo=7016) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.12170  grad_norm=0.2836
+    epoch 2  loss=0.03480  grad_norm=0.0752
+    epoch 3  loss=0.01500  grad_norm=0.0349
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 9016 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Embedding 11000 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  → Pseudo-labels: 8416 selected  (pos=4494, neg=3922)  threshold=0.9
+
+══ Self-training Round 2/2  total_train=10416  (labeled=2000, pseudo=8416) ══
+    [mem] GPU freed  allocated=1296MB  reserved=1332MB
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=8
+    epoch 1  loss=0.12470  grad_norm=0.0605
+    epoch 2  loss=0.03650  grad_norm=0.0802
+    epoch 3  loss=0.01590  grad_norm=0.0755
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+  Fine-tuning done.
+  Embedding 10416 rows …
+    [mem] GPU freed  allocated=2575MB  reserved=2584MB
+
+── Test set prediction ──
+  Embedding 11000 rows …
+Saved → ./mxbai_simcse_pseudo_90_result.csv  (pos=5818, neg=5182)

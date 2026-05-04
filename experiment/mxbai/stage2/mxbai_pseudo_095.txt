@@ -1,0 +1,182 @@
+============================================================
+  mxbai Pseudo-labeling Pipeline
+  model=rf  encoder=mixedbread-ai/mxbai-embed-large-v1
+  ft_epochs=3  ft_lr=2e-05  ft_pairs=3000
+  pseudo_rounds=2  pseudo_threshold=0.95
+============================================================
+Train: 2000 rows  |  pos=1000  neg=1000
+Test : 11000 rows
+
+Loading 'mixedbread-ai/mxbai-embed-large-v1' …
+
+── Nested 5-Fold CV (full self-training per fold, val fold never seen) ──
+
+── Nested CV  Fold 1/5 ──
+
+══ Self-training Round 0/2  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.16740  grad_norm=2.0951
+    epoch 2  loss=0.04620  grad_norm=0.2019
+    epoch 3  loss=0.01830  grad_norm=0.0548
+  Fine-tuning done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 6879 selected  (pos=3820, neg=3059)  threshold=0.95
+
+══ Self-training Round 1/2  total_train=8479  (labeled=1600, pseudo=6879) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.10510  grad_norm=0.5315
+    epoch 2  loss=0.03090  grad_norm=0.0676
+    epoch 3  loss=0.01360  grad_norm=0.1898
+  Fine-tuning done.
+  Embedding 8479 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 8344 selected  (pos=4566, neg=3778)  threshold=0.95
+
+══ Self-training Round 2/2  total_train=9944  (labeled=1600, pseudo=8344) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.11100  grad_norm=0.0795
+    epoch 2  loss=0.03020  grad_norm=3.7925
+    epoch 3  loss=0.01310  grad_norm=1.2027
+  Fine-tuning done.
+  Embedding 9944 rows …
+  Embedding 400 rows …
+  → AUC=0.8845  ACC=0.8150  P=0.8182  R=0.8100  F1=0.8141
+
+── Nested CV  Fold 2/5 ──
+
+══ Self-training Round 0/2  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.16760  grad_norm=4.0247
+    epoch 2  loss=0.04810  grad_norm=2.3791
+    epoch 3  loss=0.01290  grad_norm=0.0578
+  Fine-tuning done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 6787 selected  (pos=3767, neg=3020)  threshold=0.95
+
+══ Self-training Round 1/2  total_train=8387  (labeled=1600, pseudo=6787) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.10090  grad_norm=inf
+    epoch 2  loss=0.02800  grad_norm=0.0238
+    epoch 3  loss=0.01380  grad_norm=0.0460
+  Fine-tuning done.
+  Embedding 8387 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 8059 selected  (pos=4312, neg=3747)  threshold=0.95
+
+══ Self-training Round 2/2  total_train=9659  (labeled=1600, pseudo=8059) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.11140  grad_norm=7.2447
+    epoch 2  loss=0.03720  grad_norm=2.8193
+    epoch 3  loss=0.01490  grad_norm=1.2950
+  Fine-tuning done.
+  Embedding 9659 rows …
+  Embedding 400 rows …
+  → AUC=0.9052  ACC=0.8550  P=0.8447  R=0.8700  F1=0.8571
+
+── Nested CV  Fold 3/5 ──
+
+══ Self-training Round 0/2  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.16490  grad_norm=0.9408
+    epoch 2  loss=0.03890  grad_norm=0.1165
+    epoch 3  loss=0.00940  grad_norm=2.1012
+  Fine-tuning done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 7591 selected  (pos=3914, neg=3677)  threshold=0.95
+
+══ Self-training Round 1/2  total_train=9191  (labeled=1600, pseudo=7591) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.11850  grad_norm=0.1262
+    epoch 2  loss=0.04070  grad_norm=0.0864
+    epoch 3  loss=0.01560  grad_norm=0.1136
+  Fine-tuning done.
+  Embedding 9191 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 8364 selected  (pos=4312, neg=4052)  threshold=0.95
+
+══ Self-training Round 2/2  total_train=9964  (labeled=1600, pseudo=8364) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.11770  grad_norm=3.6369
+    epoch 2  loss=0.03570  grad_norm=14.6860
+    epoch 3  loss=0.01430  grad_norm=0.0695
+  Fine-tuning done.
+  Embedding 9964 rows …
+  Embedding 400 rows …
+  → AUC=0.9150  ACC=0.8575  P=0.8629  R=0.8500  F1=0.8564
+
+── Nested CV  Fold 4/5 ──
+
+══ Self-training Round 0/2  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.16320  grad_norm=4.0764
+    epoch 2  loss=0.04150  grad_norm=3.8192
+    epoch 3  loss=0.01610  grad_norm=0.0554
+  Fine-tuning done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 7015 selected  (pos=3365, neg=3650)  threshold=0.95
+
+══ Self-training Round 1/2  total_train=8615  (labeled=1600, pseudo=7015) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.11010  grad_norm=0.2998
+    epoch 2  loss=0.03380  grad_norm=0.0473
+    epoch 3  loss=0.01580  grad_norm=0.0160
+  Fine-tuning done.
+  Embedding 8615 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 8074 selected  (pos=4000, neg=4074)  threshold=0.95
+
+══ Self-training Round 2/2  total_train=9674  (labeled=1600, pseudo=8074) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.11080  grad_norm=0.9271
+    epoch 2  loss=0.02710  grad_norm=0.8390
+    epoch 3  loss=0.01190  grad_norm=0.0416
+  Fine-tuning done.
+  Embedding 9674 rows …
+  Embedding 400 rows …
+  → AUC=0.8766  ACC=0.8150  P=0.8247  R=0.8000  F1=0.8122
+
+── Nested CV  Fold 5/5 ──
+
+══ Self-training Round 0/2  total_train=1600  (labeled=1600, pseudo=0) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.16730  grad_norm=0.6803
+    epoch 2  loss=0.04610  grad_norm=0.2704
+    epoch 3  loss=0.01580  grad_norm=0.0324
+  Fine-tuning done.
+  Embedding 1600 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 6865 selected  (pos=3698, neg=3167)  threshold=0.95
+
+══ Self-training Round 1/2  total_train=8465  (labeled=1600, pseudo=6865) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.10830  grad_norm=5.3376
+    epoch 2  loss=0.02690  grad_norm=0.0457
+    epoch 3  loss=0.01400  grad_norm=0.0327
+  Fine-tuning done.
+  Embedding 8465 rows …
+  Embedding 11000 rows …
+  → Pseudo-labels: 8067 selected  (pos=4371, neg=3696)  threshold=0.95
+
+══ Self-training Round 2/2  total_train=9667  (labeled=1600, pseudo=8067) ══
+  Fine-tuning: pairs=3000  epochs=3  lr=2e-05  batch=16
+    epoch 1  loss=0.12140  grad_norm=11.4724
+    epoch 2  loss=0.03770  grad_norm=0.0504
+    epoch 3  loss=0.01810  grad_norm=0.4463
+  Fine-tuning done.
+  Embedding 9667 rows …
+  Embedding 400 rows …
+  → AUC=0.9052  ACC=0.8575  P=0.8522  R=0.8650  F1=0.8586
+
+════════════════════════════════════════════════════
+  Nested CV Summary (5 folds)
+────────────────────────────────────────────────────
+  AUC    mean=0.8973  std=0.0143
+  ACC    mean=0.8400  std=0.0204
+  PREC   mean=0.8405  std=0.0168
+  REC    mean=0.8390  std=0.0287
+  F1     mean=0.8397  std=0.0217
+════════════════════════════════════════════════════
